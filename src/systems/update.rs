@@ -3,7 +3,10 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{components::*, entities::ball::*};
+use crate::{
+    components::*,
+    entities::{Human, ball::*},
+};
 
 // System: project positions to transforms
 pub fn project_positions(mut positionables: Query<(&mut Transform, &Position)>) {
@@ -74,5 +77,26 @@ pub fn handle_collisions(
                 }
             }
         }
+    }
+}
+
+const PADDLE_SPEED: f32 = 5.;
+
+pub fn handle_player_input(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut paddle_velocity: Single<&mut Velocity, With<Human>>,
+) {
+    if keyboard_input.pressed(KeyCode::ArrowUp) {
+        paddle_velocity.0.y = PADDLE_SPEED;
+    } else if keyboard_input.pressed(KeyCode::ArrowDown) {
+        paddle_velocity.0.y = -PADDLE_SPEED;
+    } else {
+        paddle_velocity.0.y = 0.;
+    }
+}
+
+pub fn move_paddles(mut paddles: Query<(&mut Position, &Velocity), With<Human>>) {
+    for (mut position, velocity) in &mut paddles {
+        position.0 += velocity.0;
     }
 }

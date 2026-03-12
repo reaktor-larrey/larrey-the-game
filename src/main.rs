@@ -15,8 +15,14 @@ fn main() {
         )
         .add_systems(
             FixedUpdate,
-            // possibly .before is the same as "chaining" these?
-            (move_ball, handle_collisions, project_positions).chain(),
+            (
+                move_ball,
+                handle_collisions,
+                handle_player_input,
+                move_paddles,
+                project_positions,
+            )
+                .chain(),
         )
         .run();
 }
