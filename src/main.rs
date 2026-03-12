@@ -20,6 +20,7 @@ fn main() {
                 handle_collisions,
                 handle_player_input,
                 move_paddles,
+                constrain_paddle_position,
                 project_positions,
             )
                 .chain(),
