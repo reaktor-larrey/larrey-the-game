@@ -44,6 +44,12 @@ const PADDLE_COLOR: Color = Color::srgb(0., 1., 0.);
 )]
 struct Paddle;
 
+#[derive(Component)]
+struct Human;
+
+#[derive(Component)]
+struct Computer;
+
 fn spawn_ball(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -59,15 +65,30 @@ fn spawn_paddles(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    window: Single<&Window>,
 ) {
     let mesh = meshes.add(PADDLE_SHAPE);
     let material = materials.add(PADDLE_COLOR);
 
+    let half_window_size = window.resolution.size() / 2.;
+    let padding = 20.;
+
+    let human_position = Vec2::new(-half_window_size.x + padding, 0.);
     commands.spawn((
+        Human,
         Paddle,
-        Mesh2d(mesh),
-        MeshMaterial2d(material),
-        Position(Vec2::new(250., 0.)),
+        Mesh2d(mesh.clone()),
+        MeshMaterial2d(material.clone()),
+        Position(human_position),
+    ));
+
+    let computer_position = Vec2::new(half_window_size.x - padding, 0.);
+    commands.spawn((
+        Computer,
+        Paddle,
+        Mesh2d(mesh.clone()),
+        MeshMaterial2d(material.clone()),
+        Position(computer_position),
     ));
 }
 
@@ -154,11 +175,7 @@ fn main() {
         .add_systems(
             FixedUpdate,
             // possibly .before is the same as "chaining" these?
-            (
-                project_positions,
-                move_ball.before(project_positions),
-                handle_collisions.after(move_ball),
-            ),
+            (move_ball, handle_collisions, project_positions).chain(),
         )
         .run();
 }
