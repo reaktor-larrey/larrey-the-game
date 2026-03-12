@@ -17,3 +17,10 @@ pub enum Collision {
 
 #[derive(Component, Default)]
 pub struct Collider(pub Rectangle);
+
+#[derive(Component)]
+#[require(Position, Collider)]
+pub struct Gutter;
+
+pub const GUTTER_COLOR: Color = Color::srgb(0., 0., 1.);
+pub const GUTTER_HEIGHT: f32 = 20.;

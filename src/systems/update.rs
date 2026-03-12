@@ -3,60 +3,7 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{
-    components::{Collider, Collision, Position, Velocity},
-    entities::{
-        Computer, Human,
-        ball::{BALL_COLOR, BALL_SHAPE, BALL_SPEED, Ball},
-        paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
-    },
-};
-
-pub fn spawn_ball(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let mesh = meshes.add(BALL_SHAPE);
-    let material = materials.add(BALL_COLOR);
-
-    commands.spawn((Ball, Mesh2d(mesh), MeshMaterial2d(material)));
-}
-
-pub fn spawn_paddles(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    window: Single<&Window>,
-) {
-    let mesh = meshes.add(PADDLE_SHAPE);
-    let material = materials.add(PADDLE_COLOR);
-
-    let half_window_size = window.resolution.size() / 2.;
-    let padding = 20.;
-
-    let human_position = Vec2::new(-half_window_size.x + padding, 0.);
-    commands.spawn((
-        Human,
-        Paddle,
-        Mesh2d(mesh.clone()),
-        MeshMaterial2d(material.clone()),
-        Position(human_position),
-    ));
-
-    let computer_position = Vec2::new(half_window_size.x - padding, 0.);
-    commands.spawn((
-        Computer,
-        Paddle,
-        Mesh2d(mesh.clone()),
-        MeshMaterial2d(material.clone()),
-        Position(computer_position),
-    ));
-}
-
-pub fn spawn_camera(mut commands: Commands) {
-    commands.spawn((Camera2d, Transform::from_xyz(0., 0., 0.)));
-}
+use crate::{components::*, entities::ball::*};
 
 // System: project positions to transforms
 pub fn project_positions(mut positionables: Query<(&mut Transform, &Position)>) {
