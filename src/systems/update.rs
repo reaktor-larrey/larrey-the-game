@@ -5,7 +5,8 @@ use bevy::{
 
 use crate::{
     components::*,
-    entities::{Human, ball::*, paddle::Paddle},
+    entities::{Computer, Human, ball::*, paddle::Paddle},
+    resources::{Score, Scored},
 };
 
 // System: project positions to transforms
@@ -126,5 +127,47 @@ pub fn constrain_paddle_position(
                 }
             }
         }
+    }
+}
+
+pub fn detect_goal(
+    ball: Single<(&Position, &Collider), With<Ball>>,
+    human: Single<Entity, (With<Human>, Without<Computer>)>,
+    computer: Single<Entity, (With<Computer>, Without<Human>)>,
+    window: Single<&Window>,
+    mut commands: Commands,
+) {
+    let (ball_position, ball_collider) = ball.into_inner();
+    let half_window_size = window.resolution.size() / 2.;
+
+    if ball_position.0.x - ball_collider.half_size().x > half_window_size.x {
+        commands.trigger(Scored { scorer: *human });
+    }
+
+    if ball_position.0.x + ball_collider.half_size().x < -half_window_size.x {
+        commands.trigger(Scored { scorer: *computer });
+    }
+}
+
+pub fn reset_ball(_event: On<Scored>, ball: Single<(&mut Position, &mut Velocity), With<Ball>>) {
+    let (mut ball_position, mut ball_velocity) = ball.into_inner();
+    ball_position.0 = Vec2::ZERO;
+    ball_velocity.0 = Vec2::new(BALL_SPEED, 0.);
+}
+
+pub fn update_score(
+    event: On<Scored>,
+    mut score: ResMut<Score>,
+    is_computer: Query<&Computer>,
+    is_human: Query<&Human>,
+) {
+    if is_computer.get(event.scorer).is_ok() {
+        score.computer += 1;
+        info!("Computer scored! {} - {}", score.human, score.computer);
+    }
+
+    if is_human.get(event.scorer).is_ok() {
+        score.human += 1;
+        info!("Human Player scored! {} - {}", score.human, score.computer);
     }
 }

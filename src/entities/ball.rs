@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::components::{Collider, Position, Velocity};
 
 const BALL_SIZE: f32 = 10.0;
-pub const BALL_SPEED: f32 = 2.;
+pub const BALL_SPEED: f32 = 3.;
 
 pub const BALL_SHAPE: Circle = Circle::new(BALL_SIZE);
 pub const BALL_COLOR: Color = Color::srgb(1., 0., 0.);
