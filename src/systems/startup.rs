@@ -1,12 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{
-    entities::{
-        Human,
-        ball::{BALL_COLOR, BALL_SHAPE, Ball},
-        paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
-    },
-    resources::{FellThrough, Score},
+use crate::entities::{
+    Human,
+    ball::{BALL_COLOR, BALL_SHAPE, Ball},
+    paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
 };
 
 use crate::components::*;

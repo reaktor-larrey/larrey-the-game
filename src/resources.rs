@@ -1,4 +1,8 @@
-use bevy::ecs::{entity::Entity, event::EntityEvent, resource::Resource};
+use bevy::ecs::{
+    entity::Entity,
+    event::{EntityEvent, Event},
+    resource::Resource,
+};
 
 #[derive(Resource)]
 pub struct Score {
@@ -10,3 +14,6 @@ pub struct FellThrough {
     #[event_target]
     pub ball: Entity,
 }
+
+#[derive(Event)]
+pub struct AddAnotherPatientEvent;

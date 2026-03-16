@@ -12,7 +12,7 @@ use crate::{
         ball::*,
         paddle::{PADDLE_SPEED, Paddle},
     },
-    resources::{FellThrough, Score},
+    resources::{AddAnotherPatientEvent, FellThrough, Score},
 };
 
 // System: project positions to transforms
@@ -22,14 +22,17 @@ pub fn project_positions(mut positionables: Query<(&mut Transform, &Position)>) 
     }
 }
 
-pub fn move_ball(ball: Single<(&mut Position, &Velocity), With<Ball>>) {
-    let (mut position, velocity) = ball.into_inner();
-    position.0 += velocity.0 * FALL_SPEED;
+pub fn move_ball(balls: Query<(&mut Position, &Velocity), With<Ball>>) {
+    for (mut position, velocity) in balls {
+        position.0 += velocity.0 * FALL_SPEED;
+    }
 }
 
-pub fn apply_gravity(mut velocity: Single<&mut Velocity, With<Ball>>) {
-    if velocity.0.y > -FALL_SPEED {
-        velocity.0.y -= 0.1;
+pub fn apply_gravity(velocities: Query<&mut Velocity, With<Ball>>) {
+    for mut velocity in velocities {
+        if velocity.0.y > -FALL_SPEED {
+            velocity.0.y -= 0.1;
+        }
     }
 }
 
@@ -67,32 +70,32 @@ impl Collider {
 const BOUNCE_UP_SPEED: f32 = 6.0;
 
 pub fn handle_collisions(
-    ball: Single<(&mut Velocity, &Position, &Collider), With<Ball>>,
+    balls: Query<(&mut Velocity, &Position, &Collider), With<Ball>>,
     other_things: Query<(&Position, &Collider), Without<Ball>>,
     mut rng: Single<&mut WyRand, With<GlobalRng>>,
 ) {
-    let (mut ball_velocity, ball_position, ball_collider) = ball.into_inner();
-
-    for (other_position, other_collider) in &other_things {
-        if let Some(collision) = collide_with_side(
-            Aabb2d::new(ball_position.0, ball_collider.half_size()),
-            Aabb2d::new(other_position.0, other_collider.half_size()),
-        ) {
-            match collision {
-                Collision::Left => {
-                    ball_velocity.0.x *= -1.;
-                }
-                Collision::Right => {
-                    ball_velocity.0.x *= -1.;
-                }
-                Collision::Top => {
-                    println!("Bounce it up!");
-                    let random_number = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
-                    ball_velocity.0.y = FALL_SPEED * BOUNCE_UP_SPEED;
-                    ball_velocity.0.x += random_number;
-                }
-                Collision::Bottom => {
-                    ball_velocity.0.y *= -1.;
+    for (mut ball_velocity, ball_position, ball_collider) in balls {
+        for (other_position, other_collider) in &other_things {
+            if let Some(collision) = collide_with_side(
+                Aabb2d::new(ball_position.0, ball_collider.half_size()),
+                Aabb2d::new(other_position.0, other_collider.half_size()),
+            ) {
+                match collision {
+                    Collision::Left => {
+                        ball_velocity.0.x *= -1.;
+                    }
+                    Collision::Right => {
+                        ball_velocity.0.x *= -1.;
+                    }
+                    Collision::Top => {
+                        println!("Bounce it up!");
+                        let random_number = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
+                        ball_velocity.0.y = FALL_SPEED * BOUNCE_UP_SPEED;
+                        ball_velocity.0.x += random_number;
+                    }
+                    Collision::Bottom => {
+                        ball_velocity.0.y *= -1.;
+                    }
                 }
             }
         }
@@ -102,6 +105,7 @@ pub fn handle_collisions(
 pub fn handle_player_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut paddle_velocity: Single<&mut Velocity, With<Human>>,
+    mut commands: Commands,
 ) {
     if keyboard_input.pressed(KeyCode::ArrowLeft) {
         paddle_velocity.0.x = -PADDLE_SPEED;
@@ -109,6 +113,9 @@ pub fn handle_player_input(
         paddle_velocity.0.x = PADDLE_SPEED;
     } else {
         paddle_velocity.0.x = 0.;
+    }
+    if keyboard_input.just_released(KeyCode::Space) {
+        commands.trigger(AddAnotherPatientEvent);
     }
 }
 
@@ -151,7 +158,7 @@ pub fn update_score(_event: On<FellThrough>, mut score: ResMut<Score>) {
 }
 
 pub fn update_scoreboard(
-    mut fell_through_count: Single<&mut Text, (With<FellThroughScore>)>,
+    mut fell_through_count: Single<&mut Text, With<FellThroughScore>>,
     score: Res<Score>,
 ) {
     if score.is_changed() {
@@ -160,29 +167,42 @@ pub fn update_scoreboard(
 }
 
 pub fn reset_ball(
-    _event: On<FellThrough>,
-    ball: Single<(&mut Position, &mut Velocity), With<Ball>>,
+    event: On<FellThrough>,
+    mut balls: Query<(&mut Position, &mut Velocity), With<Ball>>,
     window: Single<&Window>,
 ) {
-    let (mut ball_position, mut ball_velocity) = ball.into_inner();
-    let half_window_size = window.resolution.size() / 2.;
+    if let Ok(ball) = balls.get_mut(event.ball) {
+        println!("Ball must reset!");
 
-    ball_position.0 = Vec2::new(0., half_window_size.y);
-    ball_velocity.0 = Vec2::ZERO;
+        let (mut ball_position, mut ball_velocity) = ball;
+        let half_window_size = window.resolution.size() / 2.;
+        ball_position.0 = Vec2::new(0., half_window_size.y);
+        ball_velocity.0 = Vec2::ZERO;
+    }
+}
+
+pub fn add_another_patient(
+    _event: On<AddAnotherPatientEvent>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut commands: Commands,
+) {
+    println!("Should add another one!");
+    let mesh = meshes.add(BALL_SHAPE);
+    let material = materials.add(BALL_COLOR);
+    commands.spawn((Ball, Mesh2d(mesh), MeshMaterial2d(material)));
 }
 
 pub fn detect_fell_through(
-    ball: Single<(Entity, (&Position, &Collider)), With<Ball>>,
+    balls: Query<(Entity, (&Position, &Collider)), With<Ball>>,
     window: Single<&Window>,
     mut commands: Commands,
 ) {
-    let (entity, (ball_position, ball_collider)) = ball.into_inner();
-    let half_window_size = window.resolution.size() / 2.;
+    for (entity, (ball_position, ball_collider)) in &balls {
+        let half_window_size = window.resolution.size() / 2.;
 
-    // if ball_position.0.y + ball_collider.half_size().y > half_window_size.y {
-    //     commands.trigger(FellThrough { ball: entity });
-    // }
-    if ball_position.0.y - ball_collider.half_size().y < -half_window_size.y {
-        commands.trigger(FellThrough { ball: entity });
+        if ball_position.0.y - ball_collider.half_size().y < -half_window_size.y {
+            commands.trigger(FellThrough { ball: entity });
+        }
     }
 }

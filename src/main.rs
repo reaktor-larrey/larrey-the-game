@@ -51,6 +51,7 @@ fn main() {
                 .chain(),
         )
         .add_observer(reset_ball)
+        .add_observer(add_another_patient)
         .add_observer(update_score)
         .run();
 }
