@@ -19,7 +19,13 @@ fn main() {
         })
         .add_systems(
             Startup,
-            (spawn_ball, spawn_paddles, spawn_gutters, spawn_camera),
+            (
+                spawn_ball,
+                spawn_paddles,
+                spawn_gutters,
+                spawn_scoreboard,
+                spawn_camera,
+            ),
         )
         .add_systems(
             FixedUpdate,
@@ -31,6 +37,7 @@ fn main() {
                 constrain_paddle_position,
                 project_positions,
                 detect_goal,
+                update_scoreboard,
             )
                 .chain(),
         )

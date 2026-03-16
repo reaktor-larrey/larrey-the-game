@@ -86,3 +86,55 @@ pub fn spawn_gutters(
         Collider(gutter_shape),
     ));
 }
+
+pub fn spawn_scoreboard(mut commands: Commands) {
+    // Create a container that will center everything
+    let container = Node {
+        width: percent(100.0),
+        height: percent(100.0),
+        justify_content: JustifyContent::Center,
+        ..default()
+    };
+
+    // Then add a container for the text
+    let header = Node {
+        width: px(200.),
+        height: px(100.),
+        ..default()
+    };
+
+    // The players score on the left hand side
+    let player_score = (
+        HumanScore,
+        Text::new("0"),
+        TextFont::from_font_size(72.0),
+        TextColor(Color::WHITE),
+        TextLayout::new_with_justify(Justify::Center),
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(5.0),
+            left: px(25.0),
+            ..default()
+        },
+    );
+
+    // The AI score on the right hand side
+    let ai_score = (
+        ComputerScore,
+        Text::new("0"),
+        TextFont::from_font_size(72.0),
+        TextColor(Color::WHITE),
+        TextLayout::new_with_justify(Justify::Center),
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(5.0),
+            right: px(25.0),
+            ..default()
+        },
+    );
+
+    commands.spawn((
+        container,
+        children![(header, children![player_score, ai_score])],
+    ));
+}

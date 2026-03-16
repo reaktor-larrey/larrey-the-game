@@ -63,6 +63,7 @@ pub fn handle_collisions(
             Aabb2d::new(ball_position.0, ball_collider.half_size()),
             Aabb2d::new(other_position.0, other_collider.half_size()),
         ) {
+            println!("Collision {:?}", collision);
             match collision {
                 Collision::Left => {
                     ball_velocity.0.x *= -1.;
@@ -169,5 +170,16 @@ pub fn update_score(
     if is_human.get(event.scorer).is_ok() {
         score.human += 1;
         info!("Human Player scored! {} - {}", score.human, score.computer);
+    }
+}
+
+pub fn update_scoreboard(
+    mut player_score: Single<&mut Text, (With<HumanScore>, Without<ComputerScore>)>,
+    mut ai_score: Single<&mut Text, (With<ComputerScore>, Without<HumanScore>)>,
+    score: Res<Score>,
+) {
+    if score.is_changed() {
+        player_score.0 = score.human.to_string();
+        ai_score.0 = score.computer.to_string();
     }
 }
