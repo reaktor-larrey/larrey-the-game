@@ -13,8 +13,16 @@ mod systems;
 
 fn main() {
     let seed: u64 = 123;
-    App::new()
-        .add_plugins(DefaultPlugins)
+    let mut app = App::new();
+
+    #[cfg(debug_assertions)]
+    {
+        use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+        app.add_plugins(FrameTimeDiagnosticsPlugin::default());
+        app.add_plugins(LogDiagnosticsPlugin::default());
+    }
+
+    app.add_plugins(DefaultPlugins)
         .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
         .insert_resource(Score {
             human: 0,
