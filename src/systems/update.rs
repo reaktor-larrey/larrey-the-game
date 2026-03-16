@@ -2,6 +2,8 @@ use bevy::{
     math::bounding::{Aabb2d, BoundingVolume, IntersectsVolume},
     prelude::*,
 };
+use bevy_rand::{global::GlobalRng, prelude::WyRand};
+use rand::RngExt;
 
 use crate::{
     components::*,
@@ -55,21 +57,26 @@ impl Collider {
 pub fn handle_collisions(
     ball: Single<(&mut Velocity, &Position, &Collider), With<Ball>>,
     other_things: Query<(&Position, &Collider), Without<Ball>>,
+    mut rng: Single<&mut WyRand, With<GlobalRng>>,
 ) {
     let (mut ball_velocity, ball_position, ball_collider) = ball.into_inner();
+
+    let random_number = rng.random_range((-1. * BALL_SPEED)..BALL_SPEED);
 
     for (other_position, other_collider) in &other_things {
         if let Some(collision) = collide_with_side(
             Aabb2d::new(ball_position.0, ball_collider.half_size()),
             Aabb2d::new(other_position.0, other_collider.half_size()),
         ) {
-            println!("Collision {:?}", collision);
+            println!("Collision {:?} + {:.4}", collision, random_number);
             match collision {
                 Collision::Left => {
                     ball_velocity.0.x *= -1.;
+                    ball_velocity.0.y += random_number;
                 }
                 Collision::Right => {
                     ball_velocity.0.x *= -1.;
+                    ball_velocity.0.y += random_number;
                 }
                 Collision::Top => {
                     ball_velocity.0.y *= -1.;
@@ -97,7 +104,7 @@ pub fn handle_player_input(
     }
 }
 
-pub fn move_paddles(mut paddles: Query<(&mut Position, &Velocity), With<Human>>) {
+pub fn move_paddles(mut paddles: Query<(&mut Position, &Velocity), With<Paddle>>) {
     for (mut position, velocity) in &mut paddles {
         position.0 += velocity.0;
     }
@@ -181,5 +188,19 @@ pub fn update_scoreboard(
     if score.is_changed() {
         player_score.0 = score.human.to_string();
         ai_score.0 = score.computer.to_string();
+    }
+}
+
+pub fn move_ai(
+    ai: Single<(&mut Velocity, &Position), With<Computer>>,
+    ball: Single<&Position, With<Ball>>,
+) {
+    let (mut velocity, position) = ai.into_inner();
+    let a_to_b = ball.0 - position.0;
+    if a_to_b.y.abs() > PADDLE_SPEED {
+        let movement = a_to_b.y.signum() * PADDLE_SPEED;
+        velocity.0.y = movement;
+    } else {
+        velocity.0.y = 0.;
     }
 }
