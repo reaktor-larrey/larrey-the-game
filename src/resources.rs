@@ -1,4 +1,9 @@
-use bevy::ecs::{entity::Entity, event::EntityEvent};
+use bevy::ecs::{entity::Entity, event::EntityEvent, resource::Resource};
+
+#[derive(Resource)]
+pub struct Score {
+    pub fell_through: u32,
+}
 
 #[derive(EntityEvent)]
 pub struct FellThrough {

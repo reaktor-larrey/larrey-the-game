@@ -23,10 +23,7 @@ pub struct Collider(pub Rectangle);
 pub struct Gutter;
 
 pub const GUTTER_COLOR: Color = Color::srgb(0., 0., 1.);
-pub const GUTTER_HEIGHT: f32 = 20.;
+pub const GUTTER_THICKNESS: f32 = 20.;
 
 #[derive(Component)]
-pub struct HumanScore;
-
-#[derive(Component)]
-pub struct ComputerScore;
+pub struct FellThroughScore;

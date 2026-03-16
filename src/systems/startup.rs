@@ -1,9 +1,12 @@
 use bevy::prelude::*;
 
-use crate::entities::{
-    Human,
-    ball::{BALL_COLOR, BALL_SHAPE, Ball},
-    paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
+use crate::{
+    entities::{
+        Human,
+        ball::{BALL_COLOR, BALL_SHAPE, Ball},
+        paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
+    },
+    resources::{FellThrough, Score},
 };
 
 use crate::components::*;
@@ -54,26 +57,26 @@ pub fn spawn_gutters(
     let material = materials.add(GUTTER_COLOR);
     let padding = 20.;
 
-    let gutter_shape = Rectangle::new(window.resolution.width(), GUTTER_HEIGHT);
+    let gutter_shape = Rectangle::new(GUTTER_THICKNESS, window.resolution.height());
     let mesh = meshes.add(gutter_shape);
 
-    let top_gutter_position = Vec2::new(0., window.resolution.height() / 2. - padding);
+    let left_gutter_position = Vec2::new(-window.resolution.width() / 2. + padding, 0.);
 
     commands.spawn((
         Gutter,
         Mesh2d(mesh.clone()),
         MeshMaterial2d(material.clone()),
-        Position(top_gutter_position),
+        Position(left_gutter_position),
         Collider(gutter_shape),
     ));
 
-    let bottom_gutter_position = Vec2::new(0., -window.resolution.height() / 2. + padding);
+    let right_gutter_position = Vec2::new(window.resolution.width() / 2. - padding, 0.);
 
     commands.spawn((
         Gutter,
         Mesh2d(mesh.clone()),
         MeshMaterial2d(material.clone()),
-        Position(bottom_gutter_position),
+        Position(right_gutter_position),
         Collider(gutter_shape),
     ));
 }
@@ -94,9 +97,9 @@ pub fn spawn_scoreboard(mut commands: Commands) {
         ..default()
     };
 
-    // The players score on the left hand side
-    let player_score = (
-        HumanScore,
+    // The fell through score/count
+    let fell_through_count = (
+        FellThroughScore,
         Text::new("0"),
         TextFont::from_font_size(72.0),
         TextColor(Color::WHITE),
@@ -104,28 +107,13 @@ pub fn spawn_scoreboard(mut commands: Commands) {
         Node {
             position_type: PositionType::Absolute,
             top: px(5.0),
-            left: px(25.0),
-            ..default()
-        },
-    );
-
-    // The AI score on the right hand side
-    let ai_score = (
-        ComputerScore,
-        Text::new("0"),
-        TextFont::from_font_size(72.0),
-        TextColor(Color::WHITE),
-        TextLayout::new_with_justify(Justify::Center),
-        Node {
-            position_type: PositionType::Absolute,
-            top: px(5.0),
-            right: px(25.0),
+            right: px(0.0),
             ..default()
         },
     );
 
     commands.spawn((
         container,
-        children![(header, children![player_score, ai_score])],
+        children![(header, children![fell_through_count])],
     ));
 }

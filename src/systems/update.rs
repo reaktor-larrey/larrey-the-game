@@ -7,8 +7,12 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    entities::{Human, ball::*, paddle::Paddle},
-    resources::FellThrough,
+    entities::{
+        Human,
+        ball::*,
+        paddle::{PADDLE_SPEED, Paddle},
+    },
+    resources::{FellThrough, Score},
 };
 
 // System: project positions to transforms
@@ -20,7 +24,13 @@ pub fn project_positions(mut positionables: Query<(&mut Transform, &Position)>) 
 
 pub fn move_ball(ball: Single<(&mut Position, &Velocity), With<Ball>>) {
     let (mut position, velocity) = ball.into_inner();
-    position.0 += velocity.0 * BALL_SPEED;
+    position.0 += velocity.0 * FALL_SPEED;
+}
+
+pub fn apply_gravity(mut velocity: Single<&mut Velocity, With<Ball>>) {
+    if velocity.0.y > -FALL_SPEED {
+        velocity.0.y -= 0.1;
+    }
 }
 
 // Returns `Some` if `ball` collides with `wall`. The returned `Collision` is the
@@ -54,6 +64,8 @@ impl Collider {
     }
 }
 
+const BOUNCE_UP_SPEED: f32 = 6.0;
+
 pub fn handle_collisions(
     ball: Single<(&mut Velocity, &Position, &Collider), With<Ball>>,
     other_things: Query<(&Position, &Collider), Without<Ball>>,
@@ -61,25 +73,23 @@ pub fn handle_collisions(
 ) {
     let (mut ball_velocity, ball_position, ball_collider) = ball.into_inner();
 
-    let random_number = rng.random_range((-1. * BALL_SPEED)..BALL_SPEED);
-
     for (other_position, other_collider) in &other_things {
         if let Some(collision) = collide_with_side(
             Aabb2d::new(ball_position.0, ball_collider.half_size()),
             Aabb2d::new(other_position.0, other_collider.half_size()),
         ) {
-            println!("Collision {:?} + {:.4}", collision, random_number);
             match collision {
                 Collision::Left => {
                     ball_velocity.0.x *= -1.;
-                    ball_velocity.0.y += random_number;
                 }
                 Collision::Right => {
                     ball_velocity.0.x *= -1.;
-                    ball_velocity.0.y += random_number;
                 }
                 Collision::Top => {
-                    ball_velocity.0.y *= -1.;
+                    println!("Bounce it up!");
+                    let random_number = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
+                    ball_velocity.0.y = FALL_SPEED * BOUNCE_UP_SPEED;
+                    ball_velocity.0.x += random_number;
                 }
                 Collision::Bottom => {
                     ball_velocity.0.y *= -1.;
@@ -88,8 +98,6 @@ pub fn handle_collisions(
         }
     }
 }
-
-const PADDLE_SPEED: f32 = 5.;
 
 pub fn handle_player_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -138,13 +146,29 @@ pub fn constrain_paddle_position(
     }
 }
 
+pub fn update_score(_event: On<FellThrough>, mut score: ResMut<Score>) {
+    score.fell_through += 1;
+}
+
+pub fn update_scoreboard(
+    mut fell_through_count: Single<&mut Text, (With<FellThroughScore>)>,
+    score: Res<Score>,
+) {
+    if score.is_changed() {
+        fell_through_count.0 = score.fell_through.to_string();
+    }
+}
+
 pub fn reset_ball(
     _event: On<FellThrough>,
     ball: Single<(&mut Position, &mut Velocity), With<Ball>>,
+    window: Single<&Window>,
 ) {
     let (mut ball_position, mut ball_velocity) = ball.into_inner();
-    ball_position.0 = Vec2::ZERO;
-    ball_velocity.0 = Vec2::new(0., -BALL_SPEED);
+    let half_window_size = window.resolution.size() / 2.;
+
+    ball_position.0 = Vec2::new(0., half_window_size.y);
+    ball_velocity.0 = Vec2::ZERO;
 }
 
 pub fn detect_fell_through(
