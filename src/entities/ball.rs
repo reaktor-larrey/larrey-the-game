@@ -11,7 +11,7 @@ pub const BALL_COLOR: Color = Color::srgb(1., 0., 0.);
 #[derive(Component)]
 #[require(
     Position,
-    Velocity = Velocity(Vec2::new(BALL_SPEED, 0.0)),
+    Velocity = Velocity(Vec2::new(0.0, -BALL_SPEED)),
     Collider = Collider(Rectangle::new(BALL_SIZE, BALL_SIZE)),
 )]
 pub struct Ball;

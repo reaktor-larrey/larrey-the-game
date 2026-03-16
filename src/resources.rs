@@ -1,13 +1,7 @@
-use bevy::ecs::{entity::Entity, event::EntityEvent, resource::Resource};
-
-#[derive(Resource)]
-pub struct Score {
-    pub human: u32,
-    pub computer: u32,
-}
+use bevy::ecs::{entity::Entity, event::EntityEvent};
 
 #[derive(EntityEvent)]
-pub struct Scored {
+pub struct FellThrough {
     #[event_target]
-    pub scorer: Entity,
+    pub ball: Entity,
 }

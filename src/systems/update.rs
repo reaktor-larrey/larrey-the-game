@@ -7,8 +7,8 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    entities::{Computer, Human, ball::*, paddle::Paddle},
-    resources::{Score, Scored},
+    entities::{Human, ball::*, paddle::Paddle},
+    resources::FellThrough,
 };
 
 // System: project positions to transforms
@@ -95,12 +95,12 @@ pub fn handle_player_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut paddle_velocity: Single<&mut Velocity, With<Human>>,
 ) {
-    if keyboard_input.pressed(KeyCode::ArrowUp) {
-        paddle_velocity.0.y = PADDLE_SPEED;
-    } else if keyboard_input.pressed(KeyCode::ArrowDown) {
-        paddle_velocity.0.y = -PADDLE_SPEED;
+    if keyboard_input.pressed(KeyCode::ArrowLeft) {
+        paddle_velocity.0.x = -PADDLE_SPEED;
+    } else if keyboard_input.pressed(KeyCode::ArrowRight) {
+        paddle_velocity.0.x = PADDLE_SPEED;
     } else {
-        paddle_velocity.0.y = 0.;
+        paddle_velocity.0.x = 0.;
     }
 }
 
@@ -138,69 +138,27 @@ pub fn constrain_paddle_position(
     }
 }
 
-pub fn detect_goal(
-    ball: Single<(&Position, &Collider), With<Ball>>,
-    human: Single<Entity, (With<Human>, Without<Computer>)>,
-    computer: Single<Entity, (With<Computer>, Without<Human>)>,
+pub fn reset_ball(
+    _event: On<FellThrough>,
+    ball: Single<(&mut Position, &mut Velocity), With<Ball>>,
+) {
+    let (mut ball_position, mut ball_velocity) = ball.into_inner();
+    ball_position.0 = Vec2::ZERO;
+    ball_velocity.0 = Vec2::new(0., -BALL_SPEED);
+}
+
+pub fn detect_fell_through(
+    ball: Single<(Entity, (&Position, &Collider)), With<Ball>>,
     window: Single<&Window>,
     mut commands: Commands,
 ) {
-    let (ball_position, ball_collider) = ball.into_inner();
+    let (entity, (ball_position, ball_collider)) = ball.into_inner();
     let half_window_size = window.resolution.size() / 2.;
 
-    if ball_position.0.x - ball_collider.half_size().x > half_window_size.x {
-        commands.trigger(Scored { scorer: *human });
-    }
-
-    if ball_position.0.x + ball_collider.half_size().x < -half_window_size.x {
-        commands.trigger(Scored { scorer: *computer });
-    }
-}
-
-pub fn reset_ball(_event: On<Scored>, ball: Single<(&mut Position, &mut Velocity), With<Ball>>) {
-    let (mut ball_position, mut ball_velocity) = ball.into_inner();
-    ball_position.0 = Vec2::ZERO;
-    ball_velocity.0 = Vec2::new(BALL_SPEED, 0.);
-}
-
-pub fn update_score(
-    event: On<Scored>,
-    mut score: ResMut<Score>,
-    is_computer: Query<&Computer>,
-    is_human: Query<&Human>,
-) {
-    if is_computer.get(event.scorer).is_ok() {
-        score.computer += 1;
-        info!("Computer scored! {} - {}", score.human, score.computer);
-    }
-
-    if is_human.get(event.scorer).is_ok() {
-        score.human += 1;
-        info!("Human Player scored! {} - {}", score.human, score.computer);
-    }
-}
-
-pub fn update_scoreboard(
-    mut player_score: Single<&mut Text, (With<HumanScore>, Without<ComputerScore>)>,
-    mut ai_score: Single<&mut Text, (With<ComputerScore>, Without<HumanScore>)>,
-    score: Res<Score>,
-) {
-    if score.is_changed() {
-        player_score.0 = score.human.to_string();
-        ai_score.0 = score.computer.to_string();
-    }
-}
-
-pub fn move_ai(
-    ai: Single<(&mut Velocity, &Position), With<Computer>>,
-    ball: Single<&Position, With<Ball>>,
-) {
-    let (mut velocity, position) = ai.into_inner();
-    let a_to_b = ball.0 - position.0;
-    if a_to_b.y.abs() > PADDLE_SPEED {
-        let movement = a_to_b.y.signum() * PADDLE_SPEED;
-        velocity.0.y = movement;
-    } else {
-        velocity.0.y = 0.;
+    // if ball_position.0.y + ball_collider.half_size().y > half_window_size.y {
+    //     commands.trigger(FellThrough { ball: entity });
+    // }
+    if ball_position.0.y - ball_collider.half_size().y < -half_window_size.y {
+        commands.trigger(FellThrough { ball: entity });
     }
 }

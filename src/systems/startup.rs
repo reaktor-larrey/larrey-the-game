@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::entities::{
-    Computer, Human,
+    Human,
     ball::{BALL_COLOR, BALL_SHAPE, Ball},
     paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
 };
@@ -31,22 +31,13 @@ pub fn spawn_paddles(
     let half_window_size = window.resolution.size() / 2.;
     let padding = 20.;
 
-    let human_position = Vec2::new(-half_window_size.x + padding, 0.);
+    let player_position = Vec2::new(0., -half_window_size.y + padding);
     commands.spawn((
         Human,
         Paddle,
         Mesh2d(mesh.clone()),
         MeshMaterial2d(material.clone()),
-        Position(human_position),
-    ));
-
-    let computer_position = Vec2::new(half_window_size.x - padding, 0.);
-    commands.spawn((
-        Computer,
-        Paddle,
-        Mesh2d(mesh.clone()),
-        MeshMaterial2d(material.clone()),
-        Position(computer_position),
+        Position(player_position),
     ));
 }
 
