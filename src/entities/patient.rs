@@ -14,4 +14,4 @@ pub const BALL_COLOR: Color = Color::srgb(1., 0., 0.);
     Velocity,
     Collider = Collider(Rectangle::new(BALL_SIZE, BALL_SIZE)),
 )]
-pub struct Ball;
+pub struct Patient;

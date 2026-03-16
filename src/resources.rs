@@ -12,8 +12,11 @@ pub struct Score {
 #[derive(EntityEvent)]
 pub struct FellThrough {
     #[event_target]
-    pub ball: Entity,
+    pub patient: Entity,
 }
 
 #[derive(Event)]
 pub struct AddAnotherPatientEvent;
+
+#[derive(Event)]
+pub struct BouncedEvent;

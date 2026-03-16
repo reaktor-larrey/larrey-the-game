@@ -9,10 +9,10 @@ use crate::{
     components::*,
     entities::{
         Human,
-        ball::*,
         paddle::{PADDLE_SPEED, Paddle},
+        patient::*,
     },
-    resources::{AddAnotherPatientEvent, FellThrough, Score},
+    resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score},
 };
 
 // System: project positions to transforms
@@ -22,13 +22,13 @@ pub fn project_positions(mut positionables: Query<(&mut Transform, &Position)>) 
     }
 }
 
-pub fn move_ball(balls: Query<(&mut Position, &Velocity), With<Ball>>) {
-    for (mut position, velocity) in balls {
+pub fn move_ball(patients: Query<(&mut Position, &Velocity), With<Patient>>) {
+    for (mut position, velocity) in patients {
         position.0 += velocity.0 * FALL_SPEED;
     }
 }
 
-pub fn apply_gravity(velocities: Query<&mut Velocity, With<Ball>>) {
+pub fn apply_gravity(velocities: Query<&mut Velocity, With<Patient>>) {
     for mut velocity in velocities {
         if velocity.0.y > -FALL_SPEED {
             velocity.0.y -= 0.1;
@@ -70,9 +70,10 @@ impl Collider {
 const BOUNCE_UP_SPEED: f32 = 6.0;
 
 pub fn handle_collisions(
-    balls: Query<(&mut Velocity, &Position, &Collider), With<Ball>>,
-    other_things: Query<(&Position, &Collider), Without<Ball>>,
+    balls: Query<(&mut Velocity, &Position, &Collider), With<Patient>>,
+    other_things: Query<(&Position, &Collider), Without<Patient>>,
     mut rng: Single<&mut WyRand, With<GlobalRng>>,
+    mut commands: Commands,
 ) {
     for (mut ball_velocity, ball_position, ball_collider) in balls {
         for (other_position, other_collider) in &other_things {
@@ -89,6 +90,7 @@ pub fn handle_collisions(
                     }
                     Collision::Top => {
                         println!("Bounce it up!");
+                        commands.trigger(BouncedEvent);
                         let random_number = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
                         ball_velocity.0.y = FALL_SPEED * BOUNCE_UP_SPEED;
                         ball_velocity.0.x += random_number;
@@ -105,7 +107,6 @@ pub fn handle_collisions(
 pub fn handle_player_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut paddle_velocity: Single<&mut Velocity, With<Human>>,
-    mut commands: Commands,
 ) {
     if keyboard_input.pressed(KeyCode::ArrowLeft) {
         paddle_velocity.0.x = -PADDLE_SPEED;
@@ -113,9 +114,6 @@ pub fn handle_player_input(
         paddle_velocity.0.x = PADDLE_SPEED;
     } else {
         paddle_velocity.0.x = 0.;
-    }
-    if keyboard_input.just_released(KeyCode::Space) {
-        commands.trigger(AddAnotherPatientEvent);
     }
 }
 
@@ -166,18 +164,19 @@ pub fn update_scoreboard(
     }
 }
 
-pub fn reset_ball(
+pub fn reset_patient(
     event: On<FellThrough>,
-    mut balls: Query<(&mut Position, &mut Velocity), With<Ball>>,
+    mut patients: Query<(&mut Position, &mut Velocity), With<Patient>>,
+    mut rng: Single<&mut WyRand, With<GlobalRng>>,
     window: Single<&Window>,
 ) {
-    if let Ok(ball) = balls.get_mut(event.ball) {
-        println!("Ball must reset!");
-
-        let (mut ball_position, mut ball_velocity) = ball;
+    if let Ok(patient) = patients.get_mut(event.patient) {
+        let (mut position, mut velocity) = patient;
         let half_window_size = window.resolution.size() / 2.;
-        ball_position.0 = Vec2::new(0., half_window_size.y);
-        ball_velocity.0 = Vec2::ZERO;
+        let random_position = rng.random_range(-half_window_size.x..half_window_size.x);
+        position.0 = Vec2::new(random_position, half_window_size.y);
+        let random_speed = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
+        velocity.0 = Vec2::new(random_speed, 0.);
     }
 }
 
@@ -190,11 +189,15 @@ pub fn add_another_patient(
     println!("Should add another one!");
     let mesh = meshes.add(BALL_SHAPE);
     let material = materials.add(BALL_COLOR);
-    commands.spawn((Ball, Mesh2d(mesh), MeshMaterial2d(material)));
+    commands.spawn((Patient, Mesh2d(mesh), MeshMaterial2d(material)));
+}
+
+pub fn on_bounced(_event: On<BouncedEvent>, mut commands: Commands) {
+    commands.trigger(AddAnotherPatientEvent)
 }
 
 pub fn detect_fell_through(
-    balls: Query<(Entity, (&Position, &Collider)), With<Ball>>,
+    balls: Query<(Entity, (&Position, &Collider)), With<Patient>>,
     window: Single<&Window>,
     mut commands: Commands,
 ) {
@@ -202,7 +205,7 @@ pub fn detect_fell_through(
         let half_window_size = window.resolution.size() / 2.;
 
         if ball_position.0.y - ball_collider.half_size().y < -half_window_size.y {
-            commands.trigger(FellThrough { ball: entity });
+            commands.trigger(FellThrough { patient: entity });
         }
     }
 }

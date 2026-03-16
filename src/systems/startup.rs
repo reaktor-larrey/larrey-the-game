@@ -2,13 +2,13 @@ use bevy::prelude::*;
 
 use crate::entities::{
     Human,
-    ball::{BALL_COLOR, BALL_SHAPE, Ball},
     paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
+    patient::{BALL_COLOR, BALL_SHAPE, Patient},
 };
 
 use crate::components::*;
 
-pub fn spawn_ball(
+pub fn spawn_patient(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -16,7 +16,7 @@ pub fn spawn_ball(
     let mesh = meshes.add(BALL_SHAPE);
     let material = materials.add(BALL_COLOR);
 
-    commands.spawn((Ball, Mesh2d(mesh), MeshMaterial2d(material)));
+    commands.spawn((Patient, Mesh2d(mesh), MeshMaterial2d(material)));
 }
 
 pub fn spawn_paddles(

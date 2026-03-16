@@ -28,7 +28,7 @@ fn main() {
         .add_systems(
             Startup,
             (
-                spawn_ball,
+                spawn_patient,
                 spawn_paddles,
                 spawn_gutters,
                 spawn_scoreboard,
@@ -50,7 +50,8 @@ fn main() {
             )
                 .chain(),
         )
-        .add_observer(reset_ball)
+        .add_observer(reset_patient)
+        .add_observer(on_bounced)
         .add_observer(add_another_patient)
         .add_observer(update_score)
         .run();
