@@ -134,15 +134,15 @@ pub fn constrain_paddle_position(
 
             if let Some(collision) = collide_with_side(paddle_aabb, gutter_aabb) {
                 match collision {
-                    Collision::Top => {
-                        paddle_position.0.y = gutter_position.0.y
-                            + gutter_collider.half_size().y
-                            + paddle_collider.half_size().y;
+                    Collision::Right => {
+                        paddle_position.0.x = gutter_position.0.x
+                            + gutter_collider.half_size().x
+                            + paddle_collider.half_size().x;
                     }
-                    Collision::Bottom => {
-                        paddle_position.0.y = gutter_position.0.y
-                            - gutter_collider.half_size().y
-                            - paddle_collider.half_size().y;
+                    Collision::Left => {
+                        paddle_position.0.x = gutter_position.0.x
+                            - gutter_collider.half_size().x
+                            - paddle_collider.half_size().x;
                     }
                     _ => {}
                 }
