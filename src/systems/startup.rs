@@ -3,24 +3,9 @@ use bevy::prelude::*;
 use crate::entities::{
     Human,
     paddle::{PADDLE_WIDTH, Paddle},
-    patient::{BALL_SIZE, Patient},
 };
 
 use crate::components::*;
-
-pub fn spawn_patient(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let texture_handle = asset_server.load("patient-f.png");
-
-    commands.spawn((
-        Patient,
-        Sprite {
-            image: texture_handle,
-            custom_size: Some(Vec2::splat(BALL_SIZE)),
-            image_mode: SpriteImageMode::Scale(SpriteScalingMode::FillCenter),
-            ..default()
-        },
-    ));
-}
 
 pub fn spawn_paddles(
     mut commands: Commands,
@@ -99,17 +84,19 @@ pub fn spawn_scoreboard(mut commands: Commands) {
         ..default()
     };
 
+    let font_size: f32 = 42.0;
+
     // The fell through score/count
     let fell_through_count = (
         FellThroughScore,
         Text::new("0"),
-        TextFont::from_font_size(72.0),
+        TextFont::from_font_size(font_size),
         TextColor(Color::WHITE),
         TextLayout::new_with_justify(Justify::Center),
         Node {
             position_type: PositionType::Absolute,
             top: px(5.0),
-            right: px(0.0),
+            left: px(0.0),
             ..default()
         },
     );

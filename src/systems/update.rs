@@ -13,7 +13,6 @@ use crate::{
         patient::*,
     },
     resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score, WaveTimerResource},
-    systems::startup::spawn_patient,
 };
 
 // System: project positions to transforms
@@ -152,7 +151,11 @@ pub fn constrain_paddle_position(
     }
 }
 
-pub fn update_score(_event: On<FellThrough>, mut score: ResMut<Score>) {
+pub fn minus_one(_event: On<FellThrough>, mut score: ResMut<Score>) {
+    score.fell_through -= 1;
+}
+
+pub fn plus_one(_event: On<BouncedEvent>, mut score: ResMut<Score>) {
     score.fell_through += 1;
 }
 
@@ -184,15 +187,12 @@ pub fn reset_patient(
 pub fn add_another_patient(
     _event: On<AddAnotherPatientEvent>,
     commands: Commands,
+    rng: Single<&mut WyRand, With<GlobalRng>>,
     asset_server: Res<AssetServer>,
 ) {
     println!("Should add another one!");
-    spawn_patient(commands, asset_server);
+    spawn_patient(commands, rng, asset_server);
 }
-
-// pub fn on_bounced(_event: On<BouncedEvent>, mut commands: Commands) {
-//     commands.trigger(AddAnotherPatientEvent)
-// }
 
 pub fn detect_fell_through(
     balls: Query<(Entity, (&Position, &Collider)), With<Patient>>,
@@ -212,12 +212,13 @@ pub fn tick_wave_timer(
     time: Res<Time>,
     mut wave_timer: ResMut<WaveTimerResource>,
     commands: Commands,
+    rng: Single<&mut WyRand, With<GlobalRng>>,
     asset_server: Res<AssetServer>,
 ) {
     wave_timer.timer.tick(time.delta());
 
     if wave_timer.timer.just_finished() {
         println!("Timer finished; spawn new patient!");
-        spawn_patient(commands, asset_server);
+        spawn_patient(commands, rng, asset_server);
     }
 }

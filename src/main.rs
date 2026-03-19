@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
 
 use crate::{
+    entities::patient::spawn_patient,
     resources::{Score, WaveTimerResource},
     systems::{startup::*, update::*},
 };
@@ -53,8 +54,8 @@ fn main() {
                 .chain(),
         )
         .add_observer(reset_patient)
-        // .add_observer(on_bounced)
+        .add_observer(minus_one)
+        .add_observer(plus_one)
         .add_observer(add_another_patient)
-        .add_observer(update_score)
         .run();
 }
