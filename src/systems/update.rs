@@ -189,9 +189,10 @@ pub fn add_another_patient(
     commands: Commands,
     rng: Single<&mut WyRand, With<GlobalRng>>,
     asset_server: Res<AssetServer>,
+    window: Single<&Window>,
 ) {
     println!("Should add another one!");
-    spawn_patient(commands, rng, asset_server);
+    spawn_patient(commands, rng, asset_server, window);
 }
 
 pub fn detect_fell_through(
@@ -214,11 +215,12 @@ pub fn tick_wave_timer(
     commands: Commands,
     rng: Single<&mut WyRand, With<GlobalRng>>,
     asset_server: Res<AssetServer>,
+    window: Single<&Window>,
 ) {
     wave_timer.timer.tick(time.delta());
 
     if wave_timer.timer.just_finished() {
         println!("Timer finished; spawn new patient!");
-        spawn_patient(commands, rng, asset_server);
+        spawn_patient(commands, rng, asset_server, window);
     }
 }
