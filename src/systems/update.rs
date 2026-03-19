@@ -12,7 +12,8 @@ use crate::{
         paddle::{PADDLE_SPEED, Paddle},
         patient::*,
     },
-    resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score},
+    resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score, WaveTimerResource},
+    systems::startup::spawn_patient,
 };
 
 // System: project positions to transforms
@@ -182,19 +183,16 @@ pub fn reset_patient(
 
 pub fn add_another_patient(
     _event: On<AddAnotherPatientEvent>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    mut commands: Commands,
+    commands: Commands,
+    asset_server: Res<AssetServer>,
 ) {
     println!("Should add another one!");
-    let mesh = meshes.add(BALL_SHAPE);
-    let material = materials.add(BALL_COLOR);
-    commands.spawn((Patient, Mesh2d(mesh), MeshMaterial2d(material)));
+    spawn_patient(commands, asset_server);
 }
 
-pub fn on_bounced(_event: On<BouncedEvent>, mut commands: Commands) {
-    commands.trigger(AddAnotherPatientEvent)
-}
+// pub fn on_bounced(_event: On<BouncedEvent>, mut commands: Commands) {
+//     commands.trigger(AddAnotherPatientEvent)
+// }
 
 pub fn detect_fell_through(
     balls: Query<(Entity, (&Position, &Collider)), With<Patient>>,
@@ -207,5 +205,19 @@ pub fn detect_fell_through(
         if ball_position.0.y - ball_collider.half_size().y < -half_window_size.y {
             commands.trigger(FellThrough { patient: entity });
         }
+    }
+}
+
+pub fn tick_wave_timer(
+    time: Res<Time>,
+    mut wave_timer: ResMut<WaveTimerResource>,
+    commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    wave_timer.timer.tick(time.delta());
+
+    if wave_timer.timer.just_finished() {
+        println!("Timer finished; spawn new patient!");
+        spawn_patient(commands, asset_server);
     }
 }

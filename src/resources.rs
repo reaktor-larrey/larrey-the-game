@@ -1,12 +1,34 @@
-use bevy::ecs::{
-    entity::Entity,
-    event::{EntityEvent, Event},
-    resource::Resource,
+use bevy::{
+    ecs::{
+        entity::Entity,
+        event::{EntityEvent, Event},
+        resource::Resource,
+    },
+    time::{Timer, TimerMode},
 };
 
 #[derive(Resource)]
 pub struct Score {
     pub fell_through: u32,
+}
+
+#[derive(Resource)]
+pub struct WaveTimerResource {
+    pub timer: Timer,
+}
+
+impl WaveTimerResource {
+    pub fn new() -> Self {
+        Self {
+            timer: Timer::from_seconds(5.0, TimerMode::Repeating),
+        }
+    }
+}
+
+impl Default for WaveTimerResource {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[derive(EntityEvent)]

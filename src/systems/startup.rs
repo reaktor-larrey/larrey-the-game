@@ -2,41 +2,46 @@ use bevy::prelude::*;
 
 use crate::entities::{
     Human,
-    paddle::{PADDLE_COLOR, PADDLE_SHAPE, Paddle},
-    patient::{BALL_COLOR, BALL_SHAPE, Patient},
+    paddle::{PADDLE_WIDTH, Paddle},
+    patient::{BALL_SIZE, Patient},
 };
 
 use crate::components::*;
 
-pub fn spawn_patient(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let mesh = meshes.add(BALL_SHAPE);
-    let material = materials.add(BALL_COLOR);
+pub fn spawn_patient(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let texture_handle = asset_server.load("patient-f.png");
 
-    commands.spawn((Patient, Mesh2d(mesh), MeshMaterial2d(material)));
+    commands.spawn((
+        Patient,
+        Sprite {
+            image: texture_handle,
+            custom_size: Some(Vec2::splat(BALL_SIZE)),
+            image_mode: SpriteImageMode::Scale(SpriteScalingMode::FillCenter),
+            ..default()
+        },
+    ));
 }
 
 pub fn spawn_paddles(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    asset_server: Res<AssetServer>,
     window: Single<&Window>,
 ) {
-    let mesh = meshes.add(PADDLE_SHAPE);
-    let material = materials.add(PADDLE_COLOR);
-
     let half_window_size = window.resolution.size() / 2.;
     let padding = 20.;
 
     let player_position = Vec2::new(0., -half_window_size.y + padding);
+
+    let texture_handle = asset_server.load("medical-w-arms.png");
     commands.spawn((
         Human,
         Paddle,
-        Mesh2d(mesh.clone()),
-        MeshMaterial2d(material.clone()),
+        Sprite {
+            image: texture_handle,
+            custom_size: Some(Vec2::splat(PADDLE_WIDTH)),
+            image_mode: SpriteImageMode::Scale(SpriteScalingMode::FillCenter),
+            ..default()
+        },
         Position(player_position),
     ));
 }

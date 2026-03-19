@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
 
 use crate::{
-    resources::Score,
+    resources::{Score, WaveTimerResource},
     systems::{startup::*, update::*},
 };
 
@@ -25,6 +25,7 @@ fn main() {
     app.add_plugins(DefaultPlugins)
         .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
         .insert_resource(Score { fell_through: 0 })
+        .init_resource::<WaveTimerResource>()
         .add_systems(
             Startup,
             (
@@ -47,11 +48,12 @@ fn main() {
                 project_positions,
                 update_scoreboard,
                 detect_fell_through,
+                tick_wave_timer,
             )
                 .chain(),
         )
         .add_observer(reset_patient)
-        .add_observer(on_bounced)
+        // .add_observer(on_bounced)
         .add_observer(add_another_patient)
         .add_observer(update_score)
         .run();
