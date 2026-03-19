@@ -1,3 +1,12 @@
+# Larrey the Game
+Medibalance, but a game. Built in Rust using [Bevy](https://bevy.org/) game engine.
+
+## Roadmap
+- [ ] Basic single player mode
+- [ ] Add AI/Agent upgrades
+
+
+## Development
 Build and run in debug mode, for desktop:
 `cargo run`
 
