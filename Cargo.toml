@@ -1,5 +1,5 @@
 [package]
-name = "larrey-game"
+name = "larrey"
 version = "0.1.0"
 edition = "2024"
 
