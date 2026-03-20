@@ -1,5 +1,14 @@
 use bevy::prelude::*;
 
+pub mod paddle;
+pub mod patient;
+
+pub use paddle::*;
+pub use patient::*;
+
+#[derive(Component)]
+pub struct Human;
+
 #[derive(Component, Default)]
 #[require(Transform)]
 pub struct Position(pub Vec2);

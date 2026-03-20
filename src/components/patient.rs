@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rand::{global::GlobalRng, prelude::WyRand};
 use rand::Rng;
 
-use crate::components::{Collider, Position, Velocity};
+use crate::components::*;
 
 pub const BALL_SIZE: f32 = 64.0;
 pub const FALL_SPEED: f32 = 1.5;

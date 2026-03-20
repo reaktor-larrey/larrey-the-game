@@ -1,14 +1,9 @@
 use bevy::prelude::*;
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
 
-use crate::{
-    entities::patient::spawn_patient,
-    resources::{Score, WaveTimerResource},
-    systems::{startup::*, update::*},
-};
+use crate::{components::patient::spawn_patient, resources::*, systems::*};
 
 mod components;
-mod entities;
 mod resources;
 mod systems;
 

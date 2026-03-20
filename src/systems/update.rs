@@ -7,11 +7,6 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    entities::{
-        Human,
-        paddle::{PADDLE_SPEED, Paddle},
-        patient::*,
-    },
     resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score, WaveTimerResource},
 };
 

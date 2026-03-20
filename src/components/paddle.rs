@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{Collider, Position, Velocity};
+use crate::components::*;
 
 pub const PADDLE_WIDTH: f32 = 100.;
 pub const PADDLE_HEIGHT: f32 = 10.0;

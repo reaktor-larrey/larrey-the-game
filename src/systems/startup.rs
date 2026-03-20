@@ -1,10 +1,5 @@
 use bevy::prelude::*;
 
-use crate::entities::{
-    Human,
-    paddle::{PADDLE_WIDTH, Paddle},
-};
-
 use crate::components::*;
 
 pub fn spawn_paddles(
