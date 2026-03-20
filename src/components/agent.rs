@@ -1,36 +1,24 @@
-use bevy::prelude::*;
-use bevy_rand::{global::GlobalRng, prelude::WyRand};
-use rand::Rng;
-
 use crate::{components::*, settings::BALL_SIZE};
+use bevy::prelude::*;
 
 #[derive(Component)]
 #[require(
     Position,
     Velocity,
     Collider = Collider(Rectangle::new(BALL_SIZE, BALL_SIZE)),
-    Sprite,
-
+    Sprite
 )]
-pub struct Patient;
+pub struct Agent;
 
-pub fn spawn_patient(
-    mut commands: Commands,
-    mut rng: Single<&mut WyRand, With<GlobalRng>>,
+pub fn spawn_agent(
+    commands: &mut Commands,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
 ) {
-    let texture_handle = {
-        let coin_toss = rng.next_u32() % 2 == 0;
-        if coin_toss {
-            asset_server.load("patient-m.png")
-        } else {
-            asset_server.load("patient-f.png")
-        }
-    };
+    let texture_handle = asset_server.load("agent-w-arms.png");
 
     commands.spawn((
-        Patient,
+        Agent,
         Sprite {
             image: texture_handle,
             custom_size: Some(Vec2::splat(BALL_SIZE)),

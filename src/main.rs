@@ -5,6 +5,7 @@ use crate::{components::patient::spawn_patient, resources::*, systems::*};
 
 mod components;
 mod resources;
+mod settings;
 mod systems;
 
 fn main() {

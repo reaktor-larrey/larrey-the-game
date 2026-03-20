@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 
+pub mod agent;
 pub mod paddle;
 pub mod patient;
 
+pub use agent::*;
 pub use paddle::*;
 pub use patient::*;
 

@@ -8,6 +8,7 @@ use rand::RngExt;
 use crate::{
     components::*,
     resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score, WaveTimerResource},
+    settings::FALL_SPEED,
 };
 
 // System: project positions to transforms
