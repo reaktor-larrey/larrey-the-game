@@ -7,8 +7,8 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score, WaveTimerResource},
-    settings::FALL_SPEED,
+    resources::{BouncedEvent, FellThrough, Score, WaveTimerResource},
+    settings::{BOUNCE_UP_SPEED, FALL_SPEED},
 };
 
 // System: project positions to transforms
@@ -62,8 +62,6 @@ impl Collider {
         self.0.half_size
     }
 }
-
-const BOUNCE_UP_SPEED: f32 = 6.0;
 
 pub fn handle_collisions(
     balls: Query<(&mut Velocity, &Position, &Collider), With<Patient>>,
@@ -119,6 +117,22 @@ pub fn move_paddles(mut paddles: Query<(&mut Position, &Velocity), With<Paddle>>
     }
 }
 
+pub fn move_agents(
+    agents: Query<(&Position, &mut Velocity), (With<Paddle>, With<Agent>)>,
+    window: Single<&Window>,
+) {
+    for (position, mut velocity) in agents {
+        if position.0.x < -(window.resolution.width() / 3.0) {
+            velocity.0.x = PADDLE_SPEED;
+            println!("Agent go right!");
+        }
+        if position.0.x > window.resolution.width() / 3.0 {
+            velocity.0.x = -PADDLE_SPEED;
+            println!("Agent go left!")
+        }
+    }
+}
+
 pub fn constrain_paddle_position(
     mut paddles: Query<(&mut Position, &Collider), (With<Paddle>, Without<Gutter>)>,
     gutters: Query<(&Position, &Collider), (With<Gutter>, Without<Paddle>)>,
@@ -147,14 +161,6 @@ pub fn constrain_paddle_position(
     }
 }
 
-pub fn minus_one(_event: On<FellThrough>, mut score: ResMut<Score>) {
-    score.fell_through -= 1;
-}
-
-pub fn plus_one(_event: On<BouncedEvent>, mut score: ResMut<Score>) {
-    score.fell_through += 1;
-}
-
 pub fn update_scoreboard(
     mut fell_through_count: Single<&mut Text, With<FellThroughScore>>,
     score: Res<Score>,
@@ -162,33 +168,6 @@ pub fn update_scoreboard(
     if score.is_changed() {
         fell_through_count.0 = score.fell_through.to_string();
     }
-}
-
-pub fn reset_patient(
-    event: On<FellThrough>,
-    mut patients: Query<(&mut Position, &mut Velocity), With<Patient>>,
-    mut rng: Single<&mut WyRand, With<GlobalRng>>,
-    window: Single<&Window>,
-) {
-    if let Ok(patient) = patients.get_mut(event.patient) {
-        let (mut position, mut velocity) = patient;
-        let half_window_size = window.resolution.size() / 2.;
-        let random_position = rng.random_range(-half_window_size.x..half_window_size.x);
-        position.0 = Vec2::new(random_position, half_window_size.y);
-        let random_speed = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
-        velocity.0 = Vec2::new(random_speed, 0.);
-    }
-}
-
-pub fn add_another_patient(
-    _event: On<AddAnotherPatientEvent>,
-    commands: Commands,
-    rng: Single<&mut WyRand, With<GlobalRng>>,
-    asset_server: Res<AssetServer>,
-    window: Single<&Window>,
-) {
-    println!("Should add another one!");
-    spawn_patient(commands, rng, asset_server, window);
 }
 
 pub fn detect_fell_through(

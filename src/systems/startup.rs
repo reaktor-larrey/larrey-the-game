@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::components::*;
 
-pub fn spawn_paddles(
+pub fn spawn_player_paddle(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,

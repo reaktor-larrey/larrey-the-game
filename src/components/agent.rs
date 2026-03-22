@@ -11,7 +11,7 @@ use bevy::prelude::*;
 pub struct Agent;
 
 pub fn spawn_agent(
-    commands: &mut Commands,
+    mut commands: Commands,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
 ) {
@@ -19,12 +19,14 @@ pub fn spawn_agent(
 
     commands.spawn((
         Agent,
+        Paddle,
         Sprite {
             image: texture_handle,
             custom_size: Some(Vec2::splat(BALL_SIZE)),
             image_mode: SpriteImageMode::Scale(SpriteScalingMode::FillCenter),
             ..default()
         },
-        Position(Vec2::new(0., window.resolution.height() / 2.0)),
+        Velocity(Vec2::new(PADDLE_SPEED, 0.)),
+        Position(Vec2::new(0., -window.resolution.height() / 2.0 + BALL_SIZE)),
     ));
 }

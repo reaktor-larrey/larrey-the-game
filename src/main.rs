@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
 
-use crate::{components::patient::spawn_patient, resources::*, systems::*};
+use crate::{components::patient::spawn_patient, observers::*, resources::*, systems::*};
 
 mod components;
+mod observers;
 mod resources;
 mod settings;
 mod systems;
@@ -27,7 +28,7 @@ fn main() {
             Startup,
             (
                 spawn_patient,
-                spawn_paddles,
+                spawn_player_paddle,
                 spawn_gutters,
                 spawn_scoreboard,
                 spawn_camera,
@@ -41,6 +42,7 @@ fn main() {
                 handle_collisions,
                 handle_player_input,
                 move_paddles,
+                move_agents,
                 constrain_paddle_position,
                 project_positions,
                 update_scoreboard,
@@ -53,5 +55,6 @@ fn main() {
         .add_observer(minus_one)
         .add_observer(plus_one)
         .add_observer(add_another_patient)
+        .add_observer(possibly_add_agent)
         .run();
 }
