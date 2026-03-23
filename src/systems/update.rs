@@ -8,7 +8,7 @@ use rand::RngExt;
 use crate::{
     components::*,
     resources::{BouncedEvent, FellThrough, Score, WaveTimerResource},
-    settings::{BOUNCE_UP_SPEED, FALL_SPEED},
+    settings::*,
 };
 
 // System: project positions to transforms
@@ -123,12 +123,10 @@ pub fn move_agents(
 ) {
     for (position, mut velocity) in agents {
         if position.0.x < -(window.resolution.width() / 3.0) {
-            velocity.0.x = PADDLE_SPEED;
-            println!("Agent go right!");
+            velocity.0.x = AGENT_SPEED;
         }
         if position.0.x > window.resolution.width() / 3.0 {
-            velocity.0.x = -PADDLE_SPEED;
-            println!("Agent go left!")
+            velocity.0.x = -AGENT_SPEED;
         }
     }
 }

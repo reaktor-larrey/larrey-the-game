@@ -49,7 +49,8 @@ pub fn possibly_add_agent(
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
 ) {
-    if score.fell_through % 2 == 0 {
+    if score.fell_through > 0 && score.fell_through % 3 == 0 {
+        println!("Score {}: Should add an agent!", score.fell_through);
         spawn_agent(commands, asset_server, window);
     }
 }

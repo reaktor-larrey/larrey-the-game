@@ -1,5 +1,7 @@
-use crate::{components::*, settings::BALL_SIZE};
-use bevy::prelude::*;
+use crate::{
+    components::*,
+    settings::{AGENT_SPEED, BALL_SIZE},
+};
 
 #[derive(Component)]
 #[require(
@@ -26,7 +28,7 @@ pub fn spawn_agent(
             image_mode: SpriteImageMode::Scale(SpriteScalingMode::FillCenter),
             ..default()
         },
-        Velocity(Vec2::new(PADDLE_SPEED, 0.)),
+        Velocity(Vec2::new(AGENT_SPEED, 0.)),
         Position(Vec2::new(0., -window.resolution.height() / 2.0 + BALL_SIZE)),
     ));
 }
