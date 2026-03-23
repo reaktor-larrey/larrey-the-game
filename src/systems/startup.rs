@@ -15,7 +15,7 @@ pub fn spawn_gutters(
     let material = materials.add(GUTTER_COLOR);
     let padding = 20.;
 
-    let gutter_shape = Rectangle::new(GUTTER_THICKNESS, window.resolution.height());
+    let gutter_shape = Rectangle::new(GUTTER_THICKNESS, window.resolution.height() * 2.0);
     let mesh = meshes.add(gutter_shape);
 
     let left_gutter_position = Vec2::new(-window.resolution.width() / 2. + padding, 0.);

@@ -46,6 +46,7 @@ pub fn add_another_patient(
 
 pub fn possibly_add_agent(
     _event: On<BouncedEvent>,
+    agents: Query<&Agent>,
     commands: Commands,
     score: Res<Score>,
     asset_server: Res<AssetServer>,
@@ -53,8 +54,12 @@ pub fn possibly_add_agent(
 ) {
     if score.fell_through > 0 {
         if (score.fell_through as u32).is_power_of_two() && score.fell_through > 1 {
-            println!("Score: {}: Should add an agent!", score.fell_through);
-            spawn_agent(commands, asset_server, window);
+            println!("Score: {}: Should add an agent?", score.fell_through);
+            let log_score = score.fell_through.ilog2();
+            println!("{} agents count vs {} log_score", agents.count(), log_score);
+            if agents.count() as u32 <= log_score {
+                spawn_agent(commands, asset_server, window);
+            }
         }
     }
 }
