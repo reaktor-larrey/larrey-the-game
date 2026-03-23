@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
 pub mod agent;
-pub mod paddle;
 pub mod patient;
+pub mod player;
 
 pub use agent::*;
-pub use paddle::*;
 pub use patient::*;
+pub use player::*;
 
 #[derive(Component)]
 pub struct Human;

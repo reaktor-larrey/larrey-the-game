@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
 
-use crate::{components::patient::spawn_patient, observers::*, resources::*, systems::*};
+use crate::{components::*, observers::*, resources::*, systems::*};
 
 mod components;
 mod observers;
@@ -40,6 +40,7 @@ fn main() {
                 move_ball,
                 apply_gravity,
                 handle_collisions,
+                handle_player_bump_ball,
                 handle_player_input,
                 move_paddles,
                 move_agents,

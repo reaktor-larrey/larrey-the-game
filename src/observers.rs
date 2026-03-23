@@ -24,7 +24,9 @@ pub fn reset_patient(
 }
 
 pub fn minus_one(_event: On<FellThrough>, mut score: ResMut<Score>) {
-    score.fell_through -= 1;
+    if score.fell_through > 0 {
+        score.fell_through -= 1;
+    }
 }
 
 pub fn plus_one(_event: On<BouncedEvent>, mut score: ResMut<Score>) {
@@ -49,8 +51,10 @@ pub fn possibly_add_agent(
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
 ) {
-    if score.fell_through > 0 && score.fell_through % 3 == 0 {
-        println!("Score {}: Should add an agent!", score.fell_through);
-        spawn_agent(commands, asset_server, window);
+    if score.fell_through > 0 {
+        if (score.fell_through as u32).is_power_of_two() && score.fell_through > 1 {
+            println!("Score: {}: Should add an agent!", score.fell_through);
+            spawn_agent(commands, asset_server, window);
+        }
     }
 }

@@ -24,11 +24,14 @@ pub fn spawn_agent(
         Paddle,
         Sprite {
             image: texture_handle,
-            custom_size: Some(Vec2::splat(BALL_SIZE)),
+            custom_size: Some(Vec2::splat(PADDLE_WIDTH)),
             image_mode: SpriteImageMode::Scale(SpriteScalingMode::FillCenter),
             ..default()
         },
         Velocity(Vec2::new(AGENT_SPEED, 0.)),
-        Position(Vec2::new(0., -window.resolution.height() / 2.0 + BALL_SIZE)),
+        Position(Vec2::new(
+            0.,
+            -window.resolution.height() / 2.0 + PADDLE_WIDTH,
+        )),
     ));
 }
