@@ -2,11 +2,12 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "chore/split-workflow" # TODO: remove when not testing
   pull_request:
     branches:
       - main
-      - "chore/split-workflow"
 
 permissions:
   contents: write
@@ -37,7 +38,7 @@ jobs:
       - name: Copy build artifact
         uses: actions/upload-artifact@v7
         with:
-          path: ./target
+          path: ./target/wasm32-unknown-unknown/release/larrey.wasm
           if-no-files-found: error
 
   deploy:
@@ -58,7 +59,7 @@ jobs:
           wasm-bindgen --no-typescript --target web \
           --out-dir public \
           --out-name larrey \
-          target/wasm32-unknown-unknown/release/larrey.wasm
+          target/larrey.wasm
 
       - name: Prepare Web Folder
         run: |
