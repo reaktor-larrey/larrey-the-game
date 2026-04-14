@@ -52,14 +52,43 @@ pub fn possibly_add_agent(
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
 ) {
-    if score.fell_through > 0 {
-        if (score.fell_through as u32).is_power_of_two() && score.fell_through > 1 {
-            println!("Score: {}: Should add an agent?", score.fell_through);
-            let log_score = score.fell_through.ilog2();
-            println!("{} agents count vs {} log_score", agents.count(), log_score);
-            if agents.count() as u32 <= log_score {
-                spawn_agent(commands, asset_server, window);
+    if should_add_agent(score.fell_through, agents.count() as u32) {
+        spawn_agent(commands, asset_server, window);
+    }
+}
+
+fn should_add_agent(score: i32, agents_count: u32) -> bool {
+    if score > 0 {
+        if (score as u32).is_power_of_two() && score > 1 {
+            println!("Score: {}: Should add an agent?", score);
+            let log_score = score.ilog2();
+            println!("{} agents count vs {} log_score", agents_count, log_score);
+            if agents_count < log_score {
+                return true;
             }
         }
+    }
+    return false;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn yes_add_agents() {
+        assert!(should_add_agent(2, 0));
+        assert!(should_add_agent(4, 1));
+        assert!(should_add_agent(8, 2));
+    }
+
+    #[test]
+    fn no_add_agents() {
+        assert!(!should_add_agent(3, 0));
+        assert!(!should_add_agent(3, 1));
+        assert!(!should_add_agent(4, 2));
+        assert!(!should_add_agent(6, 1));
+        assert!(!should_add_agent(6, 2));
+        assert!(!should_add_agent(8, 3));
     }
 }
