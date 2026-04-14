@@ -31,9 +31,6 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
-      - name: Check before compiling
-        run: cargo check
-
       - name: Build Game
         run: cargo build --release --target wasm32-unknown-unknown
 
