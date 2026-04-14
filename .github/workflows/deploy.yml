@@ -40,31 +40,31 @@ jobs:
           path: ./target
           if-no-files-found: error
 
-    deploy:
-      if: |
-        github.event_name == 'push'
-      runs-on: ubuntu-latest
-      steps:
-        - name: Copy build artifact
-          uses: actions/download-artifact@v8
-          with:
-            path: ./target
-            if-no-files-found: error
+  deploy:
+    if: |
+      github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy build artifact
+        uses: actions/download-artifact@v8
+        with:
+          path: ./target
+          if-no-files-found: error
 
-        - name: Run wasm-bindgen
-          # This generates the JS glue code needed for the browser
-          run: |
-            wasm-bindgen --no-typescript --target web \
-            --out-dir public \
-            --out-name larrey \
-            target/wasm32-unknown-unknown/release/larrey.wasm
+      - name: Run wasm-bindgen
+        # This generates the JS glue code needed for the browser
+        run: |
+          wasm-bindgen --no-typescript --target web \
+          --out-dir public \
+          --out-name larrey \
+          target/wasm32-unknown-unknown/release/larrey.wasm
 
-        - name: Prepare Web Folder
-          run: |
-            if [ -d "assets" ]; then cp -r assets public/; fi
+      - name: Prepare Web Folder
+        run: |
+          if [ -d "assets" ]; then cp -r assets public/; fi
 
-        - name: Deploy to GitHub Pages
-          uses: peaceiris/actions-gh-pages@v3
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_dir: ./public
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
