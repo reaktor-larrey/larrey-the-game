@@ -2,6 +2,7 @@ use bevy::{
     asset::{AssetServer, Handle},
     audio::AudioSource,
     ecs::{
+        component::Component,
         entity::Entity,
         event::{EntityEvent, Event},
         resource::Resource,
@@ -47,16 +48,7 @@ pub struct AddAnotherPatientEvent;
 #[derive(Event)]
 pub struct BouncedEvent;
 
-#[derive(Resource, Deref)]
+#[derive(Resource, Component)]
 pub struct SoundEffect {
-    handle: Handle<AudioSource>,
-}
-
-impl FromWorld for SoundEffect {
-    fn from_world(world: &mut World) -> Self {
-        let asset_server = world.resource::<AssetServer>();
-        SoundEffect {
-            handle: asset_server.load("bounce.mp3"),
-        }
-    }
+    pub handle: Handle<AudioSource>,
 }

@@ -13,17 +13,16 @@ fn main() {
     let seed: u64 = 123;
     let mut app = App::new();
 
-    // #[cfg(debug_assertions)]
-    // {
-    //     use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-    //     app.add_plugins(FrameTimeDiagnosticsPlugin::default());
-    //     app.add_plugins(LogDiagnosticsPlugin::default());
-    // }
+    #[cfg(debug_assertions)]
+    {
+        use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+        // app.add_plugins(FrameTimeDiagnosticsPlugin::default());
+        app.add_plugins(LogDiagnosticsPlugin::default());
+    }
 
     app.add_plugins(DefaultPlugins)
         .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
         .insert_resource(Score { fell_through: 0 })
-        .init_resource::<SoundEffect>()
         .init_resource::<WaveTimerResource>()
         .add_systems(
             Startup,
@@ -33,6 +32,7 @@ fn main() {
                 spawn_gutters,
                 spawn_scoreboard,
                 spawn_camera,
+                spawn_sound_effect,
             ),
         )
         .add_systems(

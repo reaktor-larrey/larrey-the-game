@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::*;
+use crate::{components::*, resources::SoundEffect};
 
 pub fn spawn_camera(mut commands: Commands) {
     commands.spawn((Camera2d, Transform::from_xyz(0., 0., 0.)));
@@ -76,4 +76,9 @@ pub fn spawn_scoreboard(mut commands: Commands) {
         container,
         children![(header, children![fell_through_count])],
     ));
+}
+
+pub fn spawn_sound_effect(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let handle = asset_server.load("bounce.mp3");
+    commands.insert_resource(SoundEffect { handle });
 }

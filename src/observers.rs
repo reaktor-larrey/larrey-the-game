@@ -73,11 +73,11 @@ fn should_add_agent(score: i32, agents_count: u32) -> bool {
 
 pub fn sound_on_player_bounce(
     _event: On<BouncedEvent>,
-    sound_effect: Res<SoundEffect>,
+    sound_effect: ResMut<SoundEffect>,
     mut commands: Commands,
 ) {
     commands.spawn((
-        AudioPlayer::new(sound_effect.clone()),
+        AudioPlayer::new(sound_effect.handle.clone()),
         PlaybackSettings::DESPAWN,
     ));
 }
