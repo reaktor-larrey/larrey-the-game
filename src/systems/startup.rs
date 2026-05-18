@@ -77,3 +77,7 @@ pub fn spawn_scoreboard(mut commands: Commands) {
         children![(header, children![fell_through_count])],
     ));
 }
+
+pub fn load_audio(asset_server: Res<AssetServer>, mut commands: Commands) {
+    commands.spawn(AudioPlayer::new(asset_server.load("bounce.mp3")));
+}

@@ -32,6 +32,7 @@ fn main() {
                 spawn_gutters,
                 spawn_scoreboard,
                 spawn_camera,
+                load_audio,
             ),
         )
         .add_systems(
