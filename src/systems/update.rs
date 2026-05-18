@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use bevy::{
     math::bounding::{Aabb2d, BoundingVolume, IntersectsVolume},
     prelude::*,
@@ -9,7 +7,7 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    resources::{BouncedEvent, FellThrough, PlayerBouncedEvent, Score, WaveTimerResource},
+    resources::{BouncedEvent, FellThrough, Score, WaveTimerResource},
     settings::*,
 };
 
@@ -67,12 +65,12 @@ impl Collider {
 
 pub fn handle_collisions(
     balls: Query<(Entity, &mut Velocity, &Position, &Collider), With<Patient>>,
-    other_things: Query<(&Position, &Collider), Without<Patient>>,
+    other_things: Query<(Entity, &Position, &Collider), Without<Patient>>,
     mut rng: Single<&mut WyRand, With<GlobalRng>>,
     mut commands: Commands,
 ) {
     for (ball_entity, mut ball_velocity, ball_position, ball_collider) in balls {
-        for (other_position, other_collider) in &other_things {
+        for (bouncer_entity, other_position, other_collider) in &other_things {
             if let Some(collision) = collide_with_side(
                 Aabb2d::new(ball_position.0, ball_collider.half_size()),
                 Aabb2d::new(other_position.0, other_collider.half_size()),
@@ -93,6 +91,7 @@ pub fn handle_collisions(
                         // println!("Bounce it up!");
                         commands.trigger(BouncedEvent {
                             patient: ball_entity,
+                            bouncer: bouncer_entity,
                         });
                         let random_number = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
                         // ball_velocity.0.y = FALL_SPEED * BOUNCE_UP_SPEED;

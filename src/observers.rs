@@ -27,6 +27,8 @@ pub fn reset_patient(
 pub fn on_bounced_patient(
     event: On<BouncedEvent>,
     mut patients: Query<&mut Velocity, With<Patient>>,
+    human_player: Query<&Human>,
+    sound_effect: Res<SoundEffect>,
     mut commands: Commands,
 ) {
     if let Ok(mut velocity) = patients.get_mut(event.patient) {
@@ -34,7 +36,20 @@ pub fn on_bounced_patient(
             println!("Bounce it up!");
             velocity.0.y *= FALL_SPEED * BOUNCE_UP_SPEED;
         }
-        commands.trigger(PlayerBouncedEvent);
+        // println!("human: {:?}", human_player);
+        if let Ok(_human) = human_player.get(event.bouncer) {
+            println!("it was the human who did it!");
+            commands.trigger(PlayerBounceEvent);
+            commands.spawn((
+                AudioPlayer::new(sound_effect.player_sound.clone()),
+                PlaybackSettings::DESPAWN,
+            ));
+        } else {
+            commands.spawn((
+                AudioPlayer::new(sound_effect.agent_sound.clone()),
+                PlaybackSettings::DESPAWN,
+            ));
+        }
     }
 }
 
@@ -44,7 +59,7 @@ pub fn minus_one(_event: On<FellThrough>, mut score: ResMut<Score>) {
     }
 }
 
-pub fn plus_one(_event: On<BouncedEvent>, mut score: ResMut<Score>) {
+pub fn plus_one(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
     score.fell_through += 1;
 }
 
@@ -85,28 +100,6 @@ fn should_add_agent(score: i32, agents_count: u32) -> bool {
     }
     return false;
 }
-
-pub fn sound_on_player_bounce(
-    _event: On<PlayerBouncedEvent>,
-    sound_effect: ResMut<SoundEffect>,
-    mut commands: Commands,
-) {
-    commands.spawn((
-        AudioPlayer::new(sound_effect.player_sound.clone()),
-        PlaybackSettings::DESPAWN,
-    ));
-}
-
-// pub fn sound_on_agent_bounce(
-//     _event: On<AgentBouncedEvent>,
-//     sound_effect: ResMut<SoundEffect>,
-//     mut commands: Commands,
-// ) {
-//     commands.spawn((
-//         AudioPlayer::new(sound_effect.agent_sound.clone()),
-//         PlaybackSettings::DESPAWN,
-//     ));
-// }
 
 #[cfg(test)]
 mod tests {

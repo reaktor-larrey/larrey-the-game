@@ -56,8 +56,6 @@ fn main() {
         .add_observer(reset_patient)
         .add_observer(minus_one)
         .add_observer(plus_one)
-        .add_observer(sound_on_player_bounce)
-        // .add_observer(sound_on_agent_bounce)
         .add_observer(add_another_patient)
         .add_observer(possibly_add_agent)
         .run();

@@ -47,10 +47,11 @@ pub struct AddAnotherPatientEvent;
 pub struct BouncedEvent {
     #[event_target]
     pub patient: Entity,
+    pub bouncer: Entity,
 }
 
 #[derive(Event)]
-pub struct PlayerBouncedEvent;
+pub struct PlayerBounceEvent;
 
 #[derive(Resource, Component)]
 pub struct SoundEffect {
