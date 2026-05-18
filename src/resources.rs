@@ -1,14 +1,12 @@
 use bevy::{
-    asset::{AssetServer, Handle},
+    asset::Handle,
     audio::AudioSource,
     ecs::{
         component::Component,
         entity::Entity,
         event::{EntityEvent, Event},
         resource::Resource,
-        world::{FromWorld, World},
     },
-    prelude::Deref,
     time::{Timer, TimerMode},
 };
 
@@ -45,10 +43,17 @@ pub struct FellThrough {
 #[derive(Event)]
 pub struct AddAnotherPatientEvent;
 
+#[derive(EntityEvent)]
+pub struct BouncedEvent {
+    #[event_target]
+    pub patient: Entity,
+}
+
 #[derive(Event)]
-pub struct BouncedEvent;
+pub struct PlayerBouncedEvent;
 
 #[derive(Resource, Component)]
 pub struct SoundEffect {
-    pub handle: Handle<AudioSource>,
+    pub player_sound: Handle<AudioSource>,
+    pub agent_sound: Handle<AudioSource>,
 }

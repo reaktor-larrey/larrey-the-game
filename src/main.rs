@@ -13,12 +13,12 @@ fn main() {
     let seed: u64 = 123;
     let mut app = App::new();
 
-    #[cfg(debug_assertions)]
-    {
-        use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-        // app.add_plugins(FrameTimeDiagnosticsPlugin::default());
-        app.add_plugins(LogDiagnosticsPlugin::default());
-    }
+    // #[cfg(debug_assertions)]
+    // {
+    //     use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+    //     // app.add_plugins(FrameTimeDiagnosticsPlugin::default());
+    //     app.add_plugins(LogDiagnosticsPlugin::default());
+    // }
 
     app.add_plugins(DefaultPlugins)
         .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
@@ -41,7 +41,6 @@ fn main() {
                 move_ball,
                 apply_gravity,
                 handle_collisions,
-                handle_player_bump_ball,
                 handle_player_input,
                 move_paddles,
                 move_agents,
@@ -53,10 +52,12 @@ fn main() {
             )
                 .chain(),
         )
+        .add_observer(on_bounced_patient)
         .add_observer(reset_patient)
         .add_observer(minus_one)
         .add_observer(plus_one)
         .add_observer(sound_on_player_bounce)
+        // .add_observer(sound_on_agent_bounce)
         .add_observer(add_another_patient)
         .add_observer(possibly_add_agent)
         .run();

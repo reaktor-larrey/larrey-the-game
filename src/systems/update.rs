@@ -9,7 +9,7 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    resources::{BouncedEvent, FellThrough, Score, WaveTimerResource},
+    resources::{BouncedEvent, FellThrough, PlayerBouncedEvent, Score, WaveTimerResource},
     settings::*,
 };
 
@@ -66,11 +66,12 @@ impl Collider {
 }
 
 pub fn handle_collisions(
-    balls: Query<(&mut Velocity, &Position, &Collider), With<Patient>>,
+    balls: Query<(Entity, &mut Velocity, &Position, &Collider), With<Patient>>,
     other_things: Query<(&Position, &Collider), Without<Patient>>,
     mut rng: Single<&mut WyRand, With<GlobalRng>>,
+    mut commands: Commands,
 ) {
-    for (mut ball_velocity, ball_position, ball_collider) in balls {
+    for (ball_entity, mut ball_velocity, ball_position, ball_collider) in balls {
         for (other_position, other_collider) in &other_things {
             if let Some(collision) = collide_with_side(
                 Aabb2d::new(ball_position.0, ball_collider.half_size()),
@@ -90,9 +91,9 @@ pub fn handle_collisions(
                         }
 
                         // println!("Bounce it up!");
-                        // commands.trigger(BouncedEvent {
-                        //     bouncer: other_thin,
-                        // });
+                        commands.trigger(BouncedEvent {
+                            patient: ball_entity,
+                        });
                         let random_number = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
                         // ball_velocity.0.y = FALL_SPEED * BOUNCE_UP_SPEED;
                         ball_velocity.0.x += random_number;
@@ -106,29 +107,29 @@ pub fn handle_collisions(
     }
 }
 
-pub fn handle_player_bump_ball(
-    balls: Query<(&mut Velocity, &Position, &Collider), With<Patient>>,
-    player: Single<(&Position, &Collider), With<Human>>,
-    mut commands: Commands,
-) {
-    for (mut ball_velocity, ball_position, ball_collider) in balls {
-        let (other_position, other_collider) = player.deref();
-        // let other_position = player.0;
-        // let other_collider = player.1;
-        if let Some(collision) = collide_with_side(
-            Aabb2d::new(ball_position.0, ball_collider.half_size()),
-            Aabb2d::new(other_position.0, other_collider.half_size()),
-        ) {
-            if matches!(collision, Collision::Top) {
-                if ball_velocity.0.y.signum() == 1.0 {
-                    println!("Bounce it up!");
-                    ball_velocity.0.y *= FALL_SPEED * BOUNCE_UP_SPEED;
-                }
-                commands.trigger(BouncedEvent);
-            }
-        }
-    }
-}
+// pub fn handle_player_bump_ball(
+//     balls: Query<(&mut Velocity, &Position, &Collider), With<Patient>>,
+//     player: Single<(&Position, &Collider), With<Human>>,
+//     mut commands: Commands,
+// ) {
+//     for (mut ball_velocity, ball_position, ball_collider) in balls {
+//         let (other_position, other_collider) = player.deref();
+//         // let other_position = player.0;
+//         // let other_collider = player.1;
+//         if let Some(collision) = collide_with_side(
+//             Aabb2d::new(ball_position.0, ball_collider.half_size()),
+//             Aabb2d::new(other_position.0, other_collider.half_size()),
+//         ) {
+//             if matches!(collision, Collision::Top) {
+//                 if ball_velocity.0.y.signum() == 1.0 {
+//                     println!("Bounce it up!");
+//                     ball_velocity.0.y *= FALL_SPEED * BOUNCE_UP_SPEED;
+//                 }
+//                 commands.trigger(PlayerBouncedEvent);
+//             }
+//         }
+//     }
+// }
 
 pub fn handle_player_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,

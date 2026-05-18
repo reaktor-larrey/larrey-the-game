@@ -5,6 +5,7 @@ use rand::RngExt;
 
 use crate::components::*;
 use crate::resources::*;
+use crate::settings::BOUNCE_UP_SPEED;
 use crate::settings::FALL_SPEED;
 
 pub fn reset_patient(
@@ -20,6 +21,20 @@ pub fn reset_patient(
         position.0 = Vec2::new(random_position, half_window_size.y);
         let random_speed = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
         velocity.0 = Vec2::new(random_speed, 0.);
+    }
+}
+
+pub fn on_bounced_patient(
+    event: On<BouncedEvent>,
+    mut patients: Query<&mut Velocity, With<Patient>>,
+    mut commands: Commands,
+) {
+    if let Ok(mut velocity) = patients.get_mut(event.patient) {
+        if velocity.0.y.signum() == 1.0 {
+            println!("Bounce it up!");
+            velocity.0.y *= FALL_SPEED * BOUNCE_UP_SPEED;
+        }
+        commands.trigger(PlayerBouncedEvent);
     }
 }
 
@@ -72,15 +87,26 @@ fn should_add_agent(score: i32, agents_count: u32) -> bool {
 }
 
 pub fn sound_on_player_bounce(
-    _event: On<BouncedEvent>,
+    _event: On<PlayerBouncedEvent>,
     sound_effect: ResMut<SoundEffect>,
     mut commands: Commands,
 ) {
     commands.spawn((
-        AudioPlayer::new(sound_effect.handle.clone()),
+        AudioPlayer::new(sound_effect.player_sound.clone()),
         PlaybackSettings::DESPAWN,
     ));
 }
+
+// pub fn sound_on_agent_bounce(
+//     _event: On<AgentBouncedEvent>,
+//     sound_effect: ResMut<SoundEffect>,
+//     mut commands: Commands,
+// ) {
+//     commands.spawn((
+//         AudioPlayer::new(sound_effect.agent_sound.clone()),
+//         PlaybackSettings::DESPAWN,
+//     ));
+// }
 
 #[cfg(test)]
 mod tests {
