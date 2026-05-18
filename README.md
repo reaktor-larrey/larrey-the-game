@@ -3,7 +3,8 @@ Medibalance, but a game. Built in Rust using [Bevy](https://bevy.org/) game engi
 
 ## Roadmap
 - [x] Basic single player mode
-- [ ] Add AI/Agent upgrades
+- [x] Add AI/Agent upgrades
+- [x] Sound effects
 
 
 ## Development

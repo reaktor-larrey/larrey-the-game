@@ -87,48 +87,19 @@ pub fn handle_collisions(
                             println!("Switch direction from down to up");
                             ball_velocity.0.y *= -1.;
                         }
-
-                        // println!("Bounce it up!");
                         commands.trigger(BouncedEvent {
                             patient: ball_entity,
                             bouncer: bouncer_entity,
                         });
                         let random_number = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
-                        // ball_velocity.0.y = FALL_SPEED * BOUNCE_UP_SPEED;
                         ball_velocity.0.x += random_number;
                     }
-                    Collision::Bottom => {
-                        // ball_velocity.0.y *= -1.;
-                    }
+                    _ => {}
                 }
             }
         }
     }
 }
-
-// pub fn handle_player_bump_ball(
-//     balls: Query<(&mut Velocity, &Position, &Collider), With<Patient>>,
-//     player: Single<(&Position, &Collider), With<Human>>,
-//     mut commands: Commands,
-// ) {
-//     for (mut ball_velocity, ball_position, ball_collider) in balls {
-//         let (other_position, other_collider) = player.deref();
-//         // let other_position = player.0;
-//         // let other_collider = player.1;
-//         if let Some(collision) = collide_with_side(
-//             Aabb2d::new(ball_position.0, ball_collider.half_size()),
-//             Aabb2d::new(other_position.0, other_collider.half_size()),
-//         ) {
-//             if matches!(collision, Collision::Top) {
-//                 if ball_velocity.0.y.signum() == 1.0 {
-//                     println!("Bounce it up!");
-//                     ball_velocity.0.y *= FALL_SPEED * BOUNCE_UP_SPEED;
-//                 }
-//                 commands.trigger(PlayerBouncedEvent);
-//             }
-//         }
-//     }
-// }
 
 pub fn handle_player_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
