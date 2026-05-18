@@ -1,5 +1,8 @@
 use bevy::{
+    asset::Handle,
+    audio::AudioSource,
     ecs::{
+        component::Component,
         entity::Entity,
         event::{EntityEvent, Event},
         resource::Resource,
@@ -40,5 +43,18 @@ pub struct FellThrough {
 #[derive(Event)]
 pub struct AddAnotherPatientEvent;
 
+#[derive(EntityEvent)]
+pub struct BouncedEvent {
+    #[event_target]
+    pub patient: Entity,
+    pub bouncer: Entity,
+}
+
 #[derive(Event)]
-pub struct BouncedEvent;
+pub struct PlayerBounceEvent;
+
+#[derive(Resource, Component)]
+pub struct SoundEffect {
+    pub player_sound: Handle<AudioSource>,
+    pub agent_sound: Handle<AudioSource>,
+}

@@ -16,7 +16,7 @@ fn main() {
     // #[cfg(debug_assertions)]
     // {
     //     use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-    //     app.add_plugins(FrameTimeDiagnosticsPlugin::default());
+    //     // app.add_plugins(FrameTimeDiagnosticsPlugin::default());
     //     app.add_plugins(LogDiagnosticsPlugin::default());
     // }
 
@@ -32,6 +32,7 @@ fn main() {
                 spawn_gutters,
                 spawn_scoreboard,
                 spawn_camera,
+                spawn_sound_effect,
             ),
         )
         .add_systems(
@@ -40,7 +41,6 @@ fn main() {
                 move_ball,
                 apply_gravity,
                 handle_collisions,
-                handle_player_bump_ball,
                 handle_player_input,
                 move_paddles,
                 move_agents,
@@ -52,6 +52,7 @@ fn main() {
             )
                 .chain(),
         )
+        .add_observer(on_bounced_patient)
         .add_observer(reset_patient)
         .add_observer(minus_one)
         .add_observer(plus_one)

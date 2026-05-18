@@ -5,6 +5,7 @@ use rand::RngExt;
 
 use crate::components::*;
 use crate::resources::*;
+use crate::settings::BOUNCE_UP_SPEED;
 use crate::settings::FALL_SPEED;
 
 pub fn reset_patient(
@@ -23,13 +24,42 @@ pub fn reset_patient(
     }
 }
 
+pub fn on_bounced_patient(
+    event: On<BouncedEvent>,
+    mut patients: Query<&mut Velocity, With<Patient>>,
+    human_player: Query<&Human>,
+    sound_effect: Res<SoundEffect>,
+    mut commands: Commands,
+) {
+    if let Ok(mut velocity) = patients.get_mut(event.patient) {
+        if velocity.0.y.signum() == 1.0 {
+            println!("Bounce it up!");
+            if let Ok(_human) = human_player.get(event.bouncer) {
+                velocity.0.y *= FALL_SPEED * BOUNCE_UP_SPEED;
+                commands.trigger(PlayerBounceEvent);
+                commands.spawn((
+                    AudioPlayer::new(sound_effect.player_sound.clone()),
+                    PlaybackSettings::DESPAWN,
+                ));
+            } else {
+                velocity.0.y *= FALL_SPEED * BOUNCE_UP_SPEED / 4.0;
+
+                commands.spawn((
+                    AudioPlayer::new(sound_effect.agent_sound.clone()),
+                    PlaybackSettings::DESPAWN,
+                ));
+            }
+        }
+    }
+}
+
 pub fn minus_one(_event: On<FellThrough>, mut score: ResMut<Score>) {
     if score.fell_through > 0 {
         score.fell_through -= 1;
     }
 }
 
-pub fn plus_one(_event: On<BouncedEvent>, mut score: ResMut<Score>) {
+pub fn plus_one(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
     score.fell_through += 1;
 }
 
