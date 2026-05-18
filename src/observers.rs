@@ -71,6 +71,17 @@ fn should_add_agent(score: i32, agents_count: u32) -> bool {
     return false;
 }
 
+pub fn sound_on_player_bounce(
+    _event: On<BouncedEvent>,
+    sound_effect: Res<SoundEffect>,
+    mut commands: Commands,
+) {
+    commands.spawn((
+        AudioPlayer::new(sound_effect.clone()),
+        PlaybackSettings::DESPAWN,
+    ));
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

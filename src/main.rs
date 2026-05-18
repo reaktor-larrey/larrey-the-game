@@ -23,6 +23,7 @@ fn main() {
     app.add_plugins(DefaultPlugins)
         .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
         .insert_resource(Score { fell_through: 0 })
+        .init_resource::<SoundEffect>()
         .init_resource::<WaveTimerResource>()
         .add_systems(
             Startup,
@@ -32,7 +33,6 @@ fn main() {
                 spawn_gutters,
                 spawn_scoreboard,
                 spawn_camera,
-                load_audio,
             ),
         )
         .add_systems(
@@ -56,6 +56,7 @@ fn main() {
         .add_observer(reset_patient)
         .add_observer(minus_one)
         .add_observer(plus_one)
+        .add_observer(sound_on_player_bounce)
         .add_observer(add_another_patient)
         .add_observer(possibly_add_agent)
         .run();
