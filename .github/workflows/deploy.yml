@@ -48,7 +48,10 @@ jobs:
       - name: Copy build artifact
         uses: actions/download-artifact@v8
         with:
-          path: ./public
+          path: ./target
+
+      - name: Display structure of downloaded files
+        run: ls -R target
 
       - name: Install wasm-bindgen
         uses: jetli/wasm-bindgen-action@v0.2.0
@@ -66,6 +69,9 @@ jobs:
       - name: Prepare Web Folder
         run: |
           if [ -d "assets" ]; then cp -r assets public/; fi
+
+      - name: Display structure of public files
+        run: ls -R public
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
