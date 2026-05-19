@@ -48,8 +48,7 @@ jobs:
       - name: Copy build artifact
         uses: actions/download-artifact@v8
         with:
-          path: ./target
-          if-no-files-found: error
+          path: ./public
 
       - name: Install wasm-bindgen
         uses: jetli/wasm-bindgen-action@v0.2.0
