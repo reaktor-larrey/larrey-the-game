@@ -1,6 +1,8 @@
 # Larrey the Game
 Medibalance, but a game. Built in Rust using [Bevy](https://bevy.org/) game engine.
 
+Try it online: https://reaktor-larrey.github.io/larrey-the-game/
+
 ## Roadmap
 - [x] Basic single player mode
 - [x] Add AI/Agent upgrades
