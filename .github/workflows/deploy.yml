@@ -41,11 +41,19 @@ jobs:
       github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Copy build artifact
         uses: actions/download-artifact@v8
         with:
           path: ./target
-          if-no-files-found: error
+
+      - name: Prepare Web Folder
+        run: |
+          mkdir -p public
+          cp src-web/*.html public
+          cp -r assets public
 
       - name: Install wasm-bindgen
         uses: jetli/wasm-bindgen-action@v0.2.0
@@ -60,9 +68,8 @@ jobs:
           --out-name larrey \
           target/larrey.wasm
 
-      - name: Prepare Web Folder
-        run: |
-          if [ -d "assets" ]; then cp -r assets public/; fi
+      - name: Display structure of public files
+        run: ls -R public
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
