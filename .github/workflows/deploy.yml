@@ -50,9 +50,6 @@ jobs:
         with:
           path: ./target
 
-      - name: Display structure of downloaded files
-        run: ls -R target
-
       - name: Install wasm-bindgen
         uses: jetli/wasm-bindgen-action@v0.2.0
         with:
@@ -68,7 +65,9 @@ jobs:
 
       - name: Prepare Web Folder
         run: |
-          cp -r assets public/
+          mkdir -p public
+          cp src-web/*.html public
+          cp -r assets public
 
       - name: Display structure of public files
         run: ls -R public
