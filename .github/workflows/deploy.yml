@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - "fix/deployment" # TODO: remove when not testing
   pull_request:
     branches:
       - main
