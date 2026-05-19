@@ -68,7 +68,7 @@ jobs:
 
       - name: Prepare Web Folder
         run: |
-          if [ -d "assets" ]; then cp -r assets public/; fi
+          cp -r assets public/
 
       - name: Display structure of public files
         run: ls -R public
