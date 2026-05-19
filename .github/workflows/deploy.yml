@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - "fix/deployment" # TODO: remove when not testing
   pull_request:
     branches:
       - main
@@ -41,6 +42,9 @@ jobs:
       github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Copy build artifact
         uses: actions/download-artifact@v8
         with:
