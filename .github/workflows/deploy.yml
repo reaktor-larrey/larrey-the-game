@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -11,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,16 +23,34 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Install wasm-bindgen
-        uses: jetli/wasm-bindgen-action@v0.2.0
-        with:
-          version: "0.2.114"
-
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
       - name: Build Game
         run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Copy build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          path: ./target/wasm32-unknown-unknown/release/larrey.wasm
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    if: |
+      github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy build artifact
+        uses: actions/download-artifact@v8
+        with:
+          path: ./target
+          if-no-files-found: error
+
+      - name: Install wasm-bindgen
+        uses: jetli/wasm-bindgen-action@v0.2.0
+        with:
+          version: "0.2.114"
 
       - name: Run wasm-bindgen
         # This generates the JS glue code needed for the browser
@@ -39,7 +58,7 @@ jobs:
           wasm-bindgen --no-typescript --target web \
           --out-dir public \
           --out-name larrey \
-          target/wasm32-unknown-unknown/release/larrey.wasm
+          target/larrey.wasm
 
       - name: Prepare Web Folder
         run: |
