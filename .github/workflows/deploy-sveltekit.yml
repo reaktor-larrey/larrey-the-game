@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - "feature/add-svelte"
   pull_request:
     branches:
       - main
@@ -64,9 +63,6 @@ jobs:
           --out-dir public \
           --out-name larrey \
           target/larrey.wasm
-
-      - name: Display structure of public files
-        run: ls -R public
 
       - name: Install Node.js
         uses: actions/setup-node@v6
