@@ -5,16 +5,9 @@ rs-dev:
 
 rs-release:
     cargo build --release --target wasm32-unknown-unknown
+    wasm-bindgen --target web --out-dir ./larrey-game-web/src/lib/game --out-name "larrey" ./target/wasm32-unknown-unknown/release/larrey.wasm
+    cp assets/* larrey-game-web/public
 
+[working-directory('larrey-game-web')]
 web-dev: rs-release
-    wasm-bindgen --no-typescript --target web --out-dir ./lib --out-name "larrey" ./target/wasm32-unknown-unknown/release/larrey.wasm
-    cd larrey-game-web
     npm install && npm run dev
-
-# build for web
-web-release:
-    mkdir -p public
-    cp src-web/*.html public
-    cp -r assets public
-    wasm-bindgen --no-typescript --target web --out-dir ./public --out-name "larrey" ./target/wasm32-unknown-unknown/release/larrey.wasm
-    npx serve public
