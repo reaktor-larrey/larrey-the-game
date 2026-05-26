@@ -1,7 +1,11 @@
 <script>
-    import init from "./lib/game/larrey";
+    import __wbg_init from "../../assets/game";
 </script>
 
 <main>
-    <button on:click={() => init()}>Start Game</button>
+    <button
+        on:click={async () => {
+            await __wbg_init();
+        }}>Start Game</button
+    >
 </main>
