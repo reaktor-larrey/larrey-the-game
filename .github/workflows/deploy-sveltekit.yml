@@ -1,0 +1,107 @@
+name: "Sveltekit Deploy"
+
+on:
+  workflow_dispatch:
+
+  push:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build-rust:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build Game
+        run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Copy build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          path: ./target/wasm32-unknown-unknown/release/larrey.wasm
+          if-no-files-found: error
+
+  build-site:
+    needs: build-rust
+    if: |
+      github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy build artifact
+        uses: actions/download-artifact@v8
+        with:
+          path: ./target
+
+      - name: Install wasm-bindgen
+        uses: jetli/wasm-bindgen-action@v0.2.0
+        with:
+          version: "0.2.114"
+
+      - name: Run wasm-bindgen
+        # This generates the JS glue code needed for the browser
+        run: |
+          wasm-bindgen --no-typescript --target web \
+          --out-dir public \
+          --out-name larrey \
+          target/larrey.wasm
+
+      - name: Display structure of public files
+        run: ls -R public
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          working-directory: larrey-game-web
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm i
+        with:
+          working-directory: larrey-game-web
+
+      - name: build
+        env:
+          BASE_PATH: "/${{ github.event.repository.name }}"
+        run: |
+          npm run build
+        with:
+          working-directory: larrey-game-web
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "larrey-game-web/build/"
+
+  pages-deploy:
+    needs: build-site
+    if: |
+      github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
