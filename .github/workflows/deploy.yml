@@ -1,3 +1,5 @@
+name: "Sveltekit Deploy"
+
 on:
   workflow_dispatch:
 
