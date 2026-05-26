@@ -20,43 +20,49 @@ fn main() {
     //     app.add_plugins(LogDiagnosticsPlugin::default());
     // }
 
-    app.add_plugins(DefaultPlugins)
-        .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
-        .insert_resource(Score { fell_through: 0 })
-        .init_resource::<WaveTimerResource>()
-        .add_systems(
-            Startup,
-            (
-                spawn_patient,
-                spawn_player_paddle,
-                spawn_gutters,
-                spawn_scoreboard,
-                spawn_camera,
-                spawn_sound_effect,
-            ),
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            canvas: Some("#game-canvas".into()),
+            ..default()
+        }),
+        ..default()
+    }))
+    .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
+    .insert_resource(Score { fell_through: 0 })
+    .init_resource::<WaveTimerResource>()
+    .add_systems(
+        Startup,
+        (
+            spawn_patient,
+            spawn_player_paddle,
+            spawn_gutters,
+            spawn_scoreboard,
+            spawn_camera,
+            spawn_sound_effect,
+        ),
+    )
+    .add_systems(
+        FixedUpdate,
+        (
+            move_ball,
+            apply_gravity,
+            handle_collisions,
+            handle_player_input,
+            move_paddles,
+            move_agents,
+            constrain_paddle_position,
+            project_positions,
+            update_scoreboard,
+            detect_fell_through,
+            tick_wave_timer,
         )
-        .add_systems(
-            FixedUpdate,
-            (
-                move_ball,
-                apply_gravity,
-                handle_collisions,
-                handle_player_input,
-                move_paddles,
-                move_agents,
-                constrain_paddle_position,
-                project_positions,
-                update_scoreboard,
-                detect_fell_through,
-                tick_wave_timer,
-            )
-                .chain(),
-        )
-        .add_observer(on_bounced_patient)
-        .add_observer(reset_patient)
-        .add_observer(minus_one)
-        .add_observer(plus_one)
-        .add_observer(add_another_patient)
-        .add_observer(possibly_add_agent)
-        .run();
+            .chain(),
+    )
+    .add_observer(on_bounced_patient)
+    .add_observer(reset_patient)
+    .add_observer(minus_one)
+    .add_observer(plus_one)
+    .add_observer(add_another_patient)
+    .add_observer(possibly_add_agent)
+    .run();
 }
