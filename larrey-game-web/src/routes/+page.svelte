@@ -2,8 +2,14 @@
 	import init from '$lib/pkg/larrey';
 </script>
 
-<button
-	onclick={() => {
-		init();
-	}}>Start game</button
->
+<div>
+	<button
+		onclick={() => {
+			init();
+		}}>Start game</button
+	>
+</div>
+
+<div>
+	<canvas id="game-canvas"></canvas>
+</div>
