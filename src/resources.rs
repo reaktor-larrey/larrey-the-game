@@ -64,6 +64,9 @@ pub struct PlayerBounceEvent;
 pub struct SoundEffect {
     pub player_sound: Handle<AudioSource>,
     pub agent_sound: Handle<AudioSource>,
+    pub fall_sound: Handle<AudioSource>,
+    pub gameover_sound: Handle<AudioSource>,
+    pub robot_sound: Handle<AudioSource>,
 }
 
 #[derive(Event)]

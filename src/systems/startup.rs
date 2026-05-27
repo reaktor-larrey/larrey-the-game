@@ -70,10 +70,11 @@ pub fn spawn_scoreboard(mut commands: Commands) {
 }
 
 pub fn spawn_sound_effect(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let player_sound = asset_server.load("bounce.mp3");
-    let agent_sound = asset_server.load("bounce2.mp3");
     commands.insert_resource(SoundEffect {
-        player_sound,
-        agent_sound,
+        player_sound: asset_server.load("bounce.mp3"),
+        agent_sound: asset_server.load("bounce2.mp3"),
+        fall_sound: asset_server.load("fall.mp3"),
+        gameover_sound: asset_server.load("fail.mp3"),
+        robot_sound: asset_server.load("robot.mp3"),
     });
 }

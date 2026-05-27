@@ -2,13 +2,23 @@ use bevy::prelude::*;
 
 use crate::{
     components::{GameOverMessage, Human},
-    resources::Score,
+    resources::{Score, SoundEffect},
 };
 
-pub fn end_game(mut commands: Commands, entities: Query<Entity, With<Human>>, score: Res<Score>) {
+pub fn end_game(
+    mut commands: Commands,
+    sound_effect: Res<SoundEffect>,
+    entities: Query<Entity, With<Human>>,
+    score: Res<Score>,
+) {
     for entity in &entities {
         commands.entity(entity).despawn();
     }
+
+    commands.spawn((
+        AudioPlayer::new(sound_effect.gameover_sound.clone()),
+        PlaybackSettings::DESPAWN,
+    ));
 
     let container = Node {
         width: percent(100.0),

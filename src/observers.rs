@@ -53,9 +53,18 @@ pub fn on_bounced_patient(
     }
 }
 
-pub fn another_fell_through(_event: On<FellThrough>, mut score: ResMut<Score>) {
+pub fn another_fell_through(
+    _event: On<FellThrough>,
+    mut score: ResMut<Score>,
+    sound_effect: Res<SoundEffect>,
+    mut commands: Commands,
+) {
     score.fell_through += 1;
     score.capacity -= 1;
+    commands.spawn((
+        AudioPlayer::new(sound_effect.fall_sound.clone()),
+        PlaybackSettings::DESPAWN,
+    ));
 }
 
 pub fn another_helped(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
@@ -88,13 +97,19 @@ pub fn add_another_patient(
 pub fn possibly_add_agent(
     _event: On<BouncedEvent>,
     agents: Query<&Agent>,
-    commands: Commands,
+    mut commands: Commands,
     score: Res<Score>,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
+    sound_effect: Res<SoundEffect>,
+
     texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     if should_add_agent(score.helped, agents.count()) {
+        commands.spawn((
+            AudioPlayer::new(sound_effect.robot_sound.clone()),
+            PlaybackSettings::DESPAWN,
+        ));
         spawn_agent(commands, asset_server, window, texture_atlas_layouts);
     }
 }
