@@ -1,10 +1,12 @@
 use bevy::prelude::*;
 
 pub mod agent;
+pub mod animation;
 pub mod patient;
 pub mod player;
 
 pub use agent::*;
+pub use animation::*;
 pub use patient::*;
 pub use player::*;
 

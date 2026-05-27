@@ -41,6 +41,7 @@ fn main() {
             spawn_sound_effect,
         ),
     )
+    .add_systems(Update, run_animation)
     .add_systems(
         FixedUpdate,
         (
