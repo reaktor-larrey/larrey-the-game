@@ -179,7 +179,9 @@ pub fn detect_fell_through(
     for (entity, (ball_position, ball_collider)) in &balls {
         let half_window_size = window.resolution.size() / 2.;
 
-        if ball_position.0.y - ball_collider.half_size().y < -half_window_size.y {
+        if ball_position.0.y - ball_collider.half_size().y
+            < -(half_window_size.y + PADDLE_HEIGHT * 6.0)
+        {
             commands.trigger(FellThrough { patient: entity });
         }
     }

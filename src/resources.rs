@@ -40,9 +40,6 @@ pub struct FellThrough {
     pub patient: Entity,
 }
 
-#[derive(Event)]
-pub struct AddAnotherPatientEvent;
-
 #[derive(EntityEvent)]
 pub struct BouncedEvent {
     #[event_target]
