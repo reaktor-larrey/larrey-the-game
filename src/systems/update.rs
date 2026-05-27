@@ -7,7 +7,7 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    resources::{BouncedEvent, FellThrough, Score, WaveTimerResource},
+    resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score, WaveTimerResource},
     settings::*,
 };
 
@@ -179,7 +179,9 @@ pub fn detect_fell_through(
     for (entity, (ball_position, ball_collider)) in &balls {
         let half_window_size = window.resolution.size() / 2.;
 
-        if ball_position.0.y - ball_collider.half_size().y < -half_window_size.y {
+        if ball_position.0.y - ball_collider.half_size().y
+            < -(half_window_size.y + PADDLE_HEIGHT * 6.0)
+        {
             commands.trigger(FellThrough { patient: entity });
         }
     }
@@ -188,15 +190,12 @@ pub fn detect_fell_through(
 pub fn tick_wave_timer(
     time: Res<Time>,
     mut wave_timer: ResMut<WaveTimerResource>,
-    commands: Commands,
-    rng: Single<&mut WyRand, With<GlobalRng>>,
-    asset_server: Res<AssetServer>,
-    window: Single<&Window>,
+    mut commands: Commands,
 ) {
     wave_timer.timer.tick(time.delta());
 
     if wave_timer.timer.just_finished() {
         println!("Timer finished; spawn new patient!");
-        spawn_patient(commands, rng, asset_server, window);
+        commands.trigger(AddAnotherPatientEvent);
     }
 }

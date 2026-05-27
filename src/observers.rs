@@ -69,9 +69,9 @@ pub fn add_another_patient(
     rng: Single<&mut WyRand, With<GlobalRng>>,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
+    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    println!("Should add another one!");
-    spawn_patient(commands, rng, asset_server, window);
+    spawn_patient(commands, rng, asset_server, window, texture_atlas_layouts);
 }
 
 pub fn possibly_add_agent(
@@ -81,9 +81,10 @@ pub fn possibly_add_agent(
     score: Res<Score>,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
+    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     if should_add_agent(score.fell_through, agents.count() as u32) {
-        spawn_agent(commands, asset_server, window);
+        spawn_agent(commands, asset_server, window, texture_atlas_layouts);
     }
 }
 

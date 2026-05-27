@@ -40,9 +40,6 @@ pub struct FellThrough {
     pub patient: Entity,
 }
 
-#[derive(Event)]
-pub struct AddAnotherPatientEvent;
-
 #[derive(EntityEvent)]
 pub struct BouncedEvent {
     #[event_target]
@@ -58,3 +55,6 @@ pub struct SoundEffect {
     pub player_sound: Handle<AudioSource>,
     pub agent_sound: Handle<AudioSource>,
 }
+
+#[derive(Event)]
+pub struct AddAnotherPatientEvent;
