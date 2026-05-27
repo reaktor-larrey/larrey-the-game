@@ -41,7 +41,7 @@ fn main() {
             spawn_sound_effect,
         ),
     )
-    .add_systems(Update, run_animation)
+    .add_systems(Update, run_animations)
     .add_systems(
         FixedUpdate,
         (
@@ -63,7 +63,7 @@ fn main() {
     .add_observer(reset_patient)
     .add_observer(minus_one)
     .add_observer(plus_one)
-    .add_observer(add_another_patient)
+    // .add_observer(add_another_patient)
     .add_observer(possibly_add_agent)
     .run();
 }

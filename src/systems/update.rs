@@ -192,11 +192,12 @@ pub fn tick_wave_timer(
     rng: Single<&mut WyRand, With<GlobalRng>>,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
+    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     wave_timer.timer.tick(time.delta());
 
     if wave_timer.timer.just_finished() {
         println!("Timer finished; spawn new patient!");
-        spawn_patient(commands, rng, asset_server, window);
+        spawn_patient(commands, rng, asset_server, window, texture_atlas_layouts);
     }
 }

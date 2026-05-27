@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::components::AnimationConfig;
 
-pub fn run_animation(time: Res<Time>, mut query: Query<(&mut AnimationConfig, &mut Sprite)>) {
+pub fn run_animations(time: Res<Time>, mut query: Query<(&mut AnimationConfig, &mut Sprite)>) {
     for (mut config, mut sprite) in &mut query {
         config.frame_timer.tick(time.delta());
         if config.frame_timer.just_finished()
