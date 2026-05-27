@@ -1,8 +1,11 @@
 use bevy::prelude::*;
 
-use crate::components::{GameOverMessage, Human};
+use crate::{
+    components::{GameOverMessage, Human},
+    resources::Score,
+};
 
-pub fn end_game(mut commands: Commands, entities: Query<Entity, With<Human>>) {
+pub fn end_game(mut commands: Commands, entities: Query<Entity, With<Human>>, score: Res<Score>) {
     for entity in &entities {
         commands.entity(entity).despawn();
     }
@@ -10,6 +13,7 @@ pub fn end_game(mut commands: Commands, entities: Query<Entity, With<Human>>) {
     let container = Node {
         width: percent(100.0),
         height: percent(100.0),
+        flex_direction: FlexDirection::Column,
         justify_content: JustifyContent::Center,
         align_items: AlignItems::Center,
         ..default()
@@ -27,5 +31,14 @@ pub fn end_game(mut commands: Commands, entities: Query<Entity, With<Human>>) {
         Node { ..default() },
     );
 
-    commands.spawn((container, children![gameover_text]));
+    let score_text = (
+        GameOverMessage,
+        Text::new(format!("You helped {} patients", score.helped.to_string())),
+        TextFont::from_font_size(font_size / 3.0),
+        TextColor(Color::WHITE),
+        TextLayout::new_with_justify(Justify::Center),
+        Node { ..default() },
+    );
+
+    commands.spawn((container, children![gameover_text, score_text]));
 }
