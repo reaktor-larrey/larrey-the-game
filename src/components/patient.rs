@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rand::{global::GlobalRng, prelude::WyRand};
 use rand::Rng;
 
-use crate::{components::*, settings::BALL_SIZE};
+use crate::{components::*, resources::SoundEffect, settings::BALL_SIZE};
 
 #[derive(Component)]
 #[require(
@@ -20,6 +20,7 @@ pub fn spawn_patient(
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    sound_effect: Res<SoundEffect>,
 ) {
     let texture_handle = {
         let coin_toss = rng.next_u32() % 2 == 0;
@@ -52,5 +53,10 @@ pub fn spawn_patient(
             window.resolution.height() / 2.0 + PADDLE_HEIGHT * 6.0,
         )),
         animation,
+    ));
+
+    commands.spawn((
+        AudioPlayer::new(sound_effect.whee_sound.clone()),
+        PlaybackSettings::DESPAWN,
     ));
 }

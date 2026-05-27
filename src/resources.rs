@@ -67,6 +67,7 @@ pub struct SoundEffect {
     pub fall_sound: Handle<AudioSource>,
     pub gameover_sound: Handle<AudioSource>,
     pub robot_sound: Handle<AudioSource>,
+    pub whee_sound: Handle<AudioSource>,
 }
 
 #[derive(Event)]

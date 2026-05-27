@@ -76,5 +76,6 @@ pub fn spawn_sound_effect(mut commands: Commands, asset_server: Res<AssetServer>
         fall_sound: asset_server.load("fall.mp3"),
         gameover_sound: asset_server.load("fail.mp3"),
         robot_sound: asset_server.load("robot.mp3"),
+        whee_sound: asset_server.load("whee.mp3"),
     });
 }

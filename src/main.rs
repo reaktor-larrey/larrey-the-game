@@ -38,13 +38,14 @@ fn main() {
     .add_systems(
         Startup,
         (
+            spawn_sound_effect,
             spawn_patient,
             spawn_player_paddle,
             spawn_gutters,
             spawn_scoreboard,
             spawn_camera,
-            spawn_sound_effect,
-        ),
+        )
+            .chain(),
     )
     .add_systems(Update, run_animations)
     .add_systems(

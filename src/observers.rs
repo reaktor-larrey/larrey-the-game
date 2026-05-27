@@ -90,8 +90,16 @@ pub fn add_another_patient(
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
     texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    sound_effect: Res<SoundEffect>,
 ) {
-    spawn_patient(commands, rng, asset_server, window, texture_atlas_layouts);
+    spawn_patient(
+        commands,
+        rng,
+        asset_server,
+        window,
+        texture_atlas_layouts,
+        sound_effect,
+    );
 }
 
 pub fn possibly_add_agent(
