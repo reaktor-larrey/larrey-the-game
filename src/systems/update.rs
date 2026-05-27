@@ -162,12 +162,14 @@ pub fn constrain_paddle_position(
     }
 }
 
-pub fn update_scoreboard(
-    mut fell_through_count: Single<&mut Text, With<FellThroughScore>>,
-    score: Res<Score>,
-) {
+pub fn update_scoreboard(mut scoreboard: Single<&mut Text, With<Scoreboard>>, score: Res<Score>) {
     if score.is_changed() {
-        fell_through_count.0 = score.fell_through.to_string();
+        scoreboard.0 = format!(
+            "fell: {}, helped: {}, capacity: {}",
+            score.fell_through.to_string(),
+            score.helped.to_string(),
+            score.capacity.to_string()
+        );
     }
 }
 

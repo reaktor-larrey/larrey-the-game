@@ -7,12 +7,22 @@ use bevy::{
         event::{EntityEvent, Event},
         resource::Resource,
     },
+    state::state::States,
     time::{Timer, TimerMode},
 };
 
+#[derive(Debug, Clone, Default, Copy, Eq, PartialEq, Hash, States)]
+pub enum AppState {
+    #[default]
+    Playing,
+    GameOver,
+}
+
 #[derive(Resource)]
 pub struct Score {
-    pub fell_through: i32,
+    pub helped: isize,
+    pub fell_through: isize,
+    pub capacity: isize,
 }
 
 #[derive(Resource)]
@@ -54,6 +64,10 @@ pub struct PlayerBounceEvent;
 pub struct SoundEffect {
     pub player_sound: Handle<AudioSource>,
     pub agent_sound: Handle<AudioSource>,
+    pub fall_sound: Handle<AudioSource>,
+    pub gameover_sound: Handle<AudioSource>,
+    pub robot_sound: Handle<AudioSource>,
+    pub whee_sound: Handle<AudioSource>,
 }
 
 #[derive(Event)]

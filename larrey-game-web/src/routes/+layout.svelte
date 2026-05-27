@@ -6,6 +6,14 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<title>Larrey the Game</title>
 </svelte:head>
 
 {@render children()}
+
+<style>
+	:global(body) {
+		font-family: monospace;
+		background-color: #233234;
+	}
+</style>

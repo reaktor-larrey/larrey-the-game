@@ -27,19 +27,26 @@ fn main() {
         }),
         ..default()
     }))
+    .insert_resource(ClearColor(Color::srgb_u8(35, 50, 52)))
     .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
-    .insert_resource(Score { fell_through: 0 })
+    .init_state::<AppState>()
+    .insert_resource(Score {
+        fell_through: 0,
+        helped: 0,
+        capacity: 1,
+    })
     .init_resource::<WaveTimerResource>()
     .add_systems(
         Startup,
         (
+            spawn_sound_effect,
             spawn_patient,
             spawn_player_paddle,
             spawn_gutters,
             spawn_scoreboard,
             spawn_camera,
-            spawn_sound_effect,
-        ),
+        )
+            .chain(),
     )
     .add_systems(Update, run_animations)
     .add_systems(
@@ -57,12 +64,15 @@ fn main() {
             detect_fell_through,
             tick_wave_timer,
         )
+            .run_if(in_state(AppState::Playing))
             .chain(),
     )
+    .add_systems(OnEnter(AppState::GameOver), end_game)
     .add_observer(on_bounced_patient)
     .add_observer(reset_patient)
-    .add_observer(minus_one)
-    .add_observer(plus_one)
+    .add_observer(another_fell_through)
+    .add_observer(check_game_over)
+    .add_observer(another_helped)
     .add_observer(add_another_patient)
     .add_observer(possibly_add_agent)
     .run();

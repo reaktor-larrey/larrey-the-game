@@ -39,4 +39,7 @@ pub const GUTTER_COLOR: Color = Color::srgb_u8(20, 133, 101);
 pub const GUTTER_THICKNESS: f32 = 20.;
 
 #[derive(Component)]
-pub struct FellThroughScore;
+pub struct Scoreboard;
+
+#[derive(Component)]
+pub struct GameOverMessage;

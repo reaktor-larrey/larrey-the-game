@@ -16,9 +16,12 @@ pub fn reset_patient(
 ) {
     if let Ok(patient) = patients.get_mut(event.patient) {
         let (mut position, mut velocity) = patient;
-        let half_window_size = window.resolution.size() / 2.;
-        let random_position = rng.random_range(-half_window_size.x..half_window_size.x);
-        position.0 = Vec2::new(random_position, half_window_size.y);
+        let two_thirds_window_size = window.resolution.size() / 3.;
+        let random_position = rng.random_range(-two_thirds_window_size.x..two_thirds_window_size.x);
+        position.0 = Vec2::new(
+            random_position,
+            window.resolution.size().y / 2.0 + PADDLE_HEIGHT,
+        );
         let random_speed = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
         velocity.0 = Vec2::new(random_speed, 0.);
     }
@@ -53,14 +56,34 @@ pub fn on_bounced_patient(
     }
 }
 
-pub fn minus_one(_event: On<FellThrough>, mut score: ResMut<Score>) {
-    if score.fell_through > 0 {
-        score.fell_through -= 1;
-    }
+pub fn another_fell_through(
+    _event: On<FellThrough>,
+    mut score: ResMut<Score>,
+    sound_effect: Res<SoundEffect>,
+    mut commands: Commands,
+) {
+    score.fell_through += 1;
+    score.capacity -= 1;
+    commands.spawn((
+        AudioPlayer::new(sound_effect.fall_sound.clone()),
+        PlaybackSettings::DESPAWN,
+    ));
 }
 
-pub fn plus_one(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
-    score.fell_through += 1;
+pub fn another_helped(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
+    score.helped += 1;
+    score.capacity += 1;
+}
+
+pub fn check_game_over(
+    _event: On<FellThrough>,
+    score: ResMut<Score>,
+    mut next_state: ResMut<NextState<AppState>>,
+) {
+    if score.capacity <= 0 {
+        println!("Capacity {} - game over!", score.capacity);
+        next_state.set(AppState::GameOver);
+    }
 }
 
 pub fn add_another_patient(
@@ -70,31 +93,45 @@ pub fn add_another_patient(
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
     texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    sound_effect: Res<SoundEffect>,
 ) {
-    spawn_patient(commands, rng, asset_server, window, texture_atlas_layouts);
+    spawn_patient(
+        commands,
+        rng,
+        asset_server,
+        window,
+        texture_atlas_layouts,
+        sound_effect,
+    );
 }
 
 pub fn possibly_add_agent(
     _event: On<BouncedEvent>,
     agents: Query<&Agent>,
-    commands: Commands,
+    mut commands: Commands,
     score: Res<Score>,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
+    sound_effect: Res<SoundEffect>,
+
     texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    if should_add_agent(score.fell_through, agents.count() as u32) {
+    if should_add_agent(score.helped, agents.count()) {
+        commands.spawn((
+            AudioPlayer::new(sound_effect.robot_sound.clone()),
+            PlaybackSettings::DESPAWN,
+        ));
         spawn_agent(commands, asset_server, window, texture_atlas_layouts);
     }
 }
 
-fn should_add_agent(score: i32, agents_count: u32) -> bool {
+fn should_add_agent(score: isize, agents_count: usize) -> bool {
     if score > 0 {
         if (score as u32).is_power_of_two() && score > 1 {
             println!("Score: {}: Should add an agent?", score);
-            let log_score = score.ilog2();
+            let log_score = score.ilog2() as isize;
             println!("{} agents count vs {} log_score", agents_count, log_score);
-            if agents_count < log_score {
+            if agents_count < (log_score as usize) {
                 return true;
             }
         }

@@ -48,41 +48,34 @@ pub fn spawn_scoreboard(mut commands: Commands) {
         ..default()
     };
 
-    // Then add a container for the text
-    let header = Node {
-        width: px(200.),
-        height: px(100.),
-        ..default()
-    };
+    // let width = window.resolution.width();
 
-    let font_size: f32 = 42.0;
+    let font_size: f32 = 16.0;
 
     // The fell through score/count
-    let fell_through_count = (
-        FellThroughScore,
-        Text::new("0"),
+    let scoreboard_text = (
+        Scoreboard,
+        Text::new(""),
         TextFont::from_font_size(font_size),
         TextColor(Color::WHITE),
-        TextLayout::new_with_justify(Justify::Center),
+        TextLayout::new_with_justify(Justify::Right),
         Node {
-            position_type: PositionType::Absolute,
-            top: px(5.0),
-            left: px(0.0),
+            width: percent(90.0),
+            top: percent(5.0),
             ..default()
         },
     );
 
-    commands.spawn((
-        container,
-        children![(header, children![fell_through_count])],
-    ));
+    commands.spawn((container, children![scoreboard_text]));
 }
 
 pub fn spawn_sound_effect(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let player_sound = asset_server.load("bounce.mp3");
-    let agent_sound = asset_server.load("bounce2.mp3");
     commands.insert_resource(SoundEffect {
-        player_sound,
-        agent_sound,
+        player_sound: asset_server.load("bounce.mp3"),
+        agent_sound: asset_server.load("bounce2.mp3"),
+        fall_sound: asset_server.load("fall.mp3"),
+        gameover_sound: asset_server.load("fail.mp3"),
+        robot_sound: asset_server.load("robot.mp3"),
+        whee_sound: asset_server.load("whee.mp3"),
     });
 }

@@ -4,26 +4,35 @@
 	let started = $state(false);
 </script>
 
-{#if !started}
-	<div class="spaced">
-		<button
-			class="big-button"
-			onclick={() => {
-				init();
-				started = true;
-			}}
-		>
-			<div>Start game</div>
-			<div>▶️</div>
-		</button>
-	</div>
-{/if}
-
-<div class="spaced">
-	<canvas id="game-canvas"></canvas>
-</div>
+<main>
+	{#if !started}
+		<div class="spaced">
+			<button
+				class="big-button"
+				onclick={() => {
+					init();
+					started = true;
+				}}
+			>
+				<div>Start game</div>
+				<div>▶️</div>
+			</button>
+		</div>
+	{:else}
+		<div class="spaced game">
+			<canvas id="game-canvas"></canvas>
+			<div class="instructions">⬅️ and ➡️ arrows to move</div>
+		</div>
+	{/if}
+</main>
 
 <style>
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
 	.big-button {
 		font-size: 18px;
 		padding: 16px;
@@ -36,5 +45,15 @@
 
 	.spaced {
 		margin: 16px 0;
+	}
+
+	.game {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.instructions {
+		margin: 32px 0;
+		color: white;
 	}
 </style>
