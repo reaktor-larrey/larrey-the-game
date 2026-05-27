@@ -40,3 +40,6 @@ pub const GUTTER_THICKNESS: f32 = 20.;
 
 #[derive(Component)]
 pub struct Scoreboard;
+
+#[derive(Component)]
+pub struct GameOverMessage;

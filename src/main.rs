@@ -28,6 +28,7 @@ fn main() {
         ..default()
     }))
     .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
+    .init_state::<AppState>()
     .insert_resource(Score {
         fell_through: 0,
         helped: 0,
@@ -61,11 +62,14 @@ fn main() {
             detect_fell_through,
             tick_wave_timer,
         )
+            .run_if(in_state(AppState::Playing))
             .chain(),
     )
+    .add_systems(OnEnter(AppState::GameOver), end_game)
     .add_observer(on_bounced_patient)
     .add_observer(reset_patient)
     .add_observer(another_fell_through)
+    .add_observer(check_game_over)
     .add_observer(another_helped)
     .add_observer(add_another_patient)
     .add_observer(possibly_add_agent)

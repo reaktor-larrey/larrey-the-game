@@ -63,6 +63,17 @@ pub fn another_helped(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
     score.capacity += 1;
 }
 
+pub fn check_game_over(
+    _event: On<FellThrough>,
+    score: ResMut<Score>,
+    mut next_state: ResMut<NextState<AppState>>,
+) {
+    if score.capacity <= 0 {
+        println!("Capacity {} - game over!", score.capacity);
+        next_state.set(AppState::GameOver);
+    }
+}
+
 pub fn add_another_patient(
     _event: On<AddAnotherPatientEvent>,
     commands: Commands,

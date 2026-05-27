@@ -39,7 +39,7 @@ pub fn spawn_gutters(
     ));
 }
 
-pub fn spawn_scoreboard(mut commands: Commands, window: Single<&Window>) {
+pub fn spawn_scoreboard(mut commands: Commands) {
     // Create a container that will center everything
     let container = Node {
         width: percent(100.0),
@@ -48,36 +48,25 @@ pub fn spawn_scoreboard(mut commands: Commands, window: Single<&Window>) {
         ..default()
     };
 
-    let width = window.resolution.width();
-
-    // Then add a container for the text
-    let header = Node {
-        width: px(width / 2.0),
-        height: px(100.),
-        ..default()
-    };
+    // let width = window.resolution.width();
 
     let font_size: f32 = 16.0;
 
     // The fell through score/count
-    let scoreboard_ui_elements = (
+    let scoreboard_text = (
         Scoreboard,
         Text::new(""),
         TextFont::from_font_size(font_size),
         TextColor(Color::WHITE),
         TextLayout::new_with_justify(Justify::Right),
         Node {
-            position_type: PositionType::Absolute,
-            top: px(5.0),
-            left: px(width / 3.0),
+            width: percent(90.0),
+            top: percent(5.0),
             ..default()
         },
     );
 
-    commands.spawn((
-        container,
-        children![(header, children![scoreboard_ui_elements])],
-    ));
+    commands.spawn((container, children![scoreboard_text]));
 }
 
 pub fn spawn_sound_effect(mut commands: Commands, asset_server: Res<AssetServer>) {

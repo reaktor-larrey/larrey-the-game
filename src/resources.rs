@@ -7,8 +7,16 @@ use bevy::{
         event::{EntityEvent, Event},
         resource::Resource,
     },
+    state::state::States,
     time::{Timer, TimerMode},
 };
+
+#[derive(Debug, Clone, Default, Copy, Eq, PartialEq, Hash, States)]
+pub enum AppState {
+    #[default]
+    Playing,
+    GameOver,
+}
 
 #[derive(Resource)]
 pub struct Score {
