@@ -7,7 +7,7 @@ use rand::RngExt;
 
 use crate::{
     components::*,
-    resources::{BouncedEvent, FellThrough, Score, WaveTimerResource},
+    resources::{AddAnotherPatientEvent, BouncedEvent, FellThrough, Score, WaveTimerResource},
     settings::*,
 };
 
@@ -190,16 +190,12 @@ pub fn detect_fell_through(
 pub fn tick_wave_timer(
     time: Res<Time>,
     mut wave_timer: ResMut<WaveTimerResource>,
-    commands: Commands,
-    rng: Single<&mut WyRand, With<GlobalRng>>,
-    asset_server: Res<AssetServer>,
-    window: Single<&Window>,
-    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut commands: Commands,
 ) {
     wave_timer.timer.tick(time.delta());
 
     if wave_timer.timer.just_finished() {
         println!("Timer finished; spawn new patient!");
-        spawn_patient(commands, rng, asset_server, window, texture_atlas_layouts);
+        commands.trigger(AddAnotherPatientEvent);
     }
 }

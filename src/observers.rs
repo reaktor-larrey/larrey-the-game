@@ -63,16 +63,16 @@ pub fn plus_one(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
     score.fell_through += 1;
 }
 
-// pub fn add_another_patient(
-//     _event: On<AddAnotherPatientEvent>,
-//     commands: Commands,
-//     rng: Single<&mut WyRand, With<GlobalRng>>,
-//     asset_server: Res<AssetServer>,
-//     window: Single<&Window>,
-// ) {
-//     println!("Should add another one!");
-//     spawn_patient(commands, rng, asset_server, window);
-// }
+pub fn add_another_patient(
+    _event: On<AddAnotherPatientEvent>,
+    commands: Commands,
+    rng: Single<&mut WyRand, With<GlobalRng>>,
+    asset_server: Res<AssetServer>,
+    window: Single<&Window>,
+    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+) {
+    spawn_patient(commands, rng, asset_server, window, texture_atlas_layouts);
+}
 
 pub fn possibly_add_agent(
     _event: On<BouncedEvent>,

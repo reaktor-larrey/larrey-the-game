@@ -47,7 +47,10 @@ pub fn spawn_patient(
             image_mode: SpriteImageMode::Scale(SpriteScalingMode::FillCenter),
             ..default()
         },
-        Position(Vec2::new(0., window.resolution.height() / 2.0)),
+        Position(Vec2::new(
+            0.,
+            window.resolution.height() / 2.0 + PADDLE_HEIGHT * 6.0,
+        )),
         animation,
     ));
 }

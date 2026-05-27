@@ -55,3 +55,6 @@ pub struct SoundEffect {
     pub player_sound: Handle<AudioSource>,
     pub agent_sound: Handle<AudioSource>,
 }
+
+#[derive(Event)]
+pub struct AddAnotherPatientEvent;
