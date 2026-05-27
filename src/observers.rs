@@ -16,9 +16,12 @@ pub fn reset_patient(
 ) {
     if let Ok(patient) = patients.get_mut(event.patient) {
         let (mut position, mut velocity) = patient;
-        let half_window_size = window.resolution.size() / 2.;
-        let random_position = rng.random_range(-half_window_size.x..half_window_size.x);
-        position.0 = Vec2::new(random_position, half_window_size.y);
+        let two_thirds_window_size = window.resolution.size() / 3.;
+        let random_position = rng.random_range(-two_thirds_window_size.x..two_thirds_window_size.x);
+        position.0 = Vec2::new(
+            random_position,
+            window.resolution.size().y / 2.0 + PADDLE_HEIGHT,
+        );
         let random_speed = rng.random_range((-1. * FALL_SPEED)..FALL_SPEED);
         velocity.0 = Vec2::new(random_speed, 0.);
     }
