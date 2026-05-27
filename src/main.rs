@@ -27,6 +27,7 @@ fn main() {
         }),
         ..default()
     }))
+    .insert_resource(ClearColor(Color::srgb_u8(35, 50, 52)))
     .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
     .init_state::<AppState>()
     .insert_resource(Score {
