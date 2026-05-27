@@ -81,9 +81,10 @@ pub fn possibly_add_agent(
     score: Res<Score>,
     asset_server: Res<AssetServer>,
     window: Single<&Window>,
+    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     if should_add_agent(score.fell_through, agents.count() as u32) {
-        spawn_agent(commands, asset_server, window);
+        spawn_agent(commands, asset_server, window, texture_atlas_layouts);
     }
 }
 
