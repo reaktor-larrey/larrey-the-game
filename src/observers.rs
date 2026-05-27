@@ -53,14 +53,14 @@ pub fn on_bounced_patient(
     }
 }
 
-pub fn minus_one(_event: On<FellThrough>, mut score: ResMut<Score>) {
-    if score.fell_through > 0 {
-        score.fell_through -= 1;
-    }
+pub fn another_fell_through(_event: On<FellThrough>, mut score: ResMut<Score>) {
+    score.fell_through += 1;
+    score.capacity -= 1;
 }
 
-pub fn plus_one(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
-    score.fell_through += 1;
+pub fn another_helped(_event: On<PlayerBounceEvent>, mut score: ResMut<Score>) {
+    score.helped += 1;
+    score.capacity += 1;
 }
 
 pub fn add_another_patient(
@@ -83,18 +83,18 @@ pub fn possibly_add_agent(
     window: Single<&Window>,
     texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    if should_add_agent(score.fell_through, agents.count() as u32) {
+    if should_add_agent(score.helped, agents.count()) {
         spawn_agent(commands, asset_server, window, texture_atlas_layouts);
     }
 }
 
-fn should_add_agent(score: i32, agents_count: u32) -> bool {
+fn should_add_agent(score: isize, agents_count: usize) -> bool {
     if score > 0 {
         if (score as u32).is_power_of_two() && score > 1 {
             println!("Score: {}: Should add an agent?", score);
-            let log_score = score.ilog2();
+            let log_score = score.ilog2() as isize;
             println!("{} agents count vs {} log_score", agents_count, log_score);
-            if agents_count < log_score {
+            if agents_count < (log_score as usize) {
                 return true;
             }
         }

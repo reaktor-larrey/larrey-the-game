@@ -39,7 +39,7 @@ pub fn spawn_gutters(
     ));
 }
 
-pub fn spawn_scoreboard(mut commands: Commands) {
+pub fn spawn_scoreboard(mut commands: Commands, window: Single<&Window>) {
     // Create a container that will center everything
     let container = Node {
         width: percent(100.0),
@@ -48,33 +48,35 @@ pub fn spawn_scoreboard(mut commands: Commands) {
         ..default()
     };
 
+    let width = window.resolution.width();
+
     // Then add a container for the text
     let header = Node {
-        width: px(200.),
+        width: px(width / 2.0),
         height: px(100.),
         ..default()
     };
 
-    let font_size: f32 = 42.0;
+    let font_size: f32 = 16.0;
 
     // The fell through score/count
-    let fell_through_count = (
-        FellThroughScore,
-        Text::new("0"),
+    let scoreboard_ui_elements = (
+        Scoreboard,
+        Text::new(""),
         TextFont::from_font_size(font_size),
         TextColor(Color::WHITE),
-        TextLayout::new_with_justify(Justify::Center),
+        TextLayout::new_with_justify(Justify::Right),
         Node {
             position_type: PositionType::Absolute,
             top: px(5.0),
-            left: px(0.0),
+            left: px(width / 3.0),
             ..default()
         },
     );
 
     commands.spawn((
         container,
-        children![(header, children![fell_through_count])],
+        children![(header, children![scoreboard_ui_elements])],
     ));
 }
 

@@ -28,7 +28,11 @@ fn main() {
         ..default()
     }))
     .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
-    .insert_resource(Score { fell_through: 0 })
+    .insert_resource(Score {
+        fell_through: 0,
+        helped: 0,
+        capacity: 1,
+    })
     .init_resource::<WaveTimerResource>()
     .add_systems(
         Startup,
@@ -61,8 +65,8 @@ fn main() {
     )
     .add_observer(on_bounced_patient)
     .add_observer(reset_patient)
-    .add_observer(minus_one)
-    .add_observer(plus_one)
+    .add_observer(another_fell_through)
+    .add_observer(another_helped)
     .add_observer(add_another_patient)
     .add_observer(possibly_add_agent)
     .run();

@@ -12,7 +12,9 @@ use bevy::{
 
 #[derive(Resource)]
 pub struct Score {
-    pub fell_through: i32,
+    pub helped: isize,
+    pub fell_through: isize,
+    pub capacity: isize,
 }
 
 #[derive(Resource)]
