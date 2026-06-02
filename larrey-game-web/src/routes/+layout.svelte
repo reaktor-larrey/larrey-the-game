@@ -15,5 +15,6 @@
 	:global(body) {
 		font-family: monospace;
 		background-color: #233234;
+		color: white;
 	}
 </style>

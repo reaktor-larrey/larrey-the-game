@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{components::*, resources::SoundEffect};
+use crate::{components::*, handle_js_event, resources::SoundEffect};
 
 pub fn spawn_camera(mut commands: Commands) {
+    handle_js_event(String::from("boo"));
     commands.spawn((Camera2d, Transform::from_xyz(0., 0., 0.)));
 }
 

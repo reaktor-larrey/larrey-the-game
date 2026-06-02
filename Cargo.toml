@@ -7,6 +7,8 @@ edition = "2024"
 bevy = { version = "0.18.1", default-features = false, features = ["2d", "mp3", "debug"]  }
 bevy_rand = { version = "0.14", features = ["chacha20", "wyrand"] }
 rand = "0.10.0"
+serde = { version = "1.0.228", features = ["std", "derive"] }
+wasm-bindgen = { version = "0.2.122", features = ["std", "serde", "serde-serialize", "serde_json"] }
 
 
 

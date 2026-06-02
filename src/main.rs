@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
+use wasm_bindgen::prelude::*;
 
 use crate::{components::*, observers::*, resources::*, systems::*};
 
@@ -8,6 +9,11 @@ mod observers;
 mod resources;
 mod settings;
 mod systems;
+
+#[wasm_bindgen(module = "$lib/pkg/external.js")]
+extern "C" {
+    pub fn handle_js_event(js_event: String);
+}
 
 fn main() {
     let seed: u64 = 123;
