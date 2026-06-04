@@ -1,5 +1,5 @@
 /* @ts-self-types="./larrey.d.ts" */
-import { handle_js_event } from '$lib/pkg/external.js';
+import { handle_js_event } from '$lib/pkg/external';
 
 function __wbg_get_imports() {
     const import0 = {
@@ -843,7 +843,7 @@ function __wbg_get_imports() {
             const ret = arg0[arg1 >>> 0];
             return ret;
         },
-        __wbg_handle_js_event_948395946f34ffe9: function(arg0, arg1) {
+        __wbg_handle_js_event_624ffdda2f847b71: function(arg0, arg1) {
             let deferred0_0;
             let deferred0_1;
             try {

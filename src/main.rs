@@ -10,7 +10,7 @@ mod resources;
 mod settings;
 mod systems;
 
-#[wasm_bindgen(module = "$lib/pkg/external.js")]
+#[wasm_bindgen(module = "$lib/pkg/external")]
 extern "C" {
     pub fn handle_js_event(js_event: String);
 }
