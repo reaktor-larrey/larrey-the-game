@@ -1,4 +1,4 @@
-import type { Context } from '@netlify/functions';
+import type { Config } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
 
 type PlayerResult = {
@@ -6,7 +6,7 @@ type PlayerResult = {
 	score: number;
 };
 
-export default async (req: Request, context: Context) => {
+export default async (req: Request) => {
 	const store = getStore('scores');
 
 	const { name, score } = (await req.json()) as PlayerResult;
@@ -23,12 +23,13 @@ export default async (req: Request, context: Context) => {
 			{ status: 201 }
 		);
 	} catch (e) {
-		return new Response(
-			JSON.stringify({
-				message: 'Failed to enter score into leaderboard',
-				error: e instanceof Error ? e.message : String(e)
-			}),
-			{ status: 500 }
-		);
+		return new Response(e instanceof Error ? e.message : String(e), {
+			status: 500,
+			statusText: e instanceof Error ? e.message : String(e)
+		});
 	}
+};
+
+export const config: Config = {
+	method: 'POST'
 };
