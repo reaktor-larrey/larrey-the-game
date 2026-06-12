@@ -1,13 +1,25 @@
 import type { Config } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
 
-export default async (req: Request) => {
+export default async (_req: Request) => {
 	try {
 		const store = getStore('scores');
 
-		const scores = await store.get('scores');
+		const contents = await store.list();
+		const scores = await Promise.all(
+			contents.blobs.map(async (b) => {
+				const entry = await store.get(b.key);
+				console.log({ entry });
+				return {
+					key: b.key,
+					score: JSON.parse(entry.toString())
+				};
+			})
+		);
 
-		return new Response(JSON.stringify(scores), { status: 200 });
+		console.log({ store, scores });
+
+		return new Response(JSON.stringify({ scores }), { status: 200 });
 	} catch (e) {
 		return new Response(e instanceof Error ? e.message : String(e), {
 			status: 500,

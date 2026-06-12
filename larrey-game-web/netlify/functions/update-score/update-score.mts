@@ -11,6 +11,8 @@ export default async (req: Request) => {
 
 	const { name, score } = (await req.json()) as PlayerResult;
 
+	console.log({ store });
+
 	try {
 		const result = await store.set(name, score.toString());
 
