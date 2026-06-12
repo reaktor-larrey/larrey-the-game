@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Leaderboard from '$lib/components/Leaderboard.svelte';
 	import init from '$lib/pkg/larrey';
 
 	let started = $state(false);
@@ -6,6 +7,8 @@
 
 <main>
 	{#if !started}
+		<Leaderboard />
+
 		<div class="spaced">
 			<button
 				class="big-button"
@@ -41,6 +44,11 @@
 		gap: 8px;
 		align-items: center;
 		text-transform: uppercase;
+		cursor: pointer;
+		&:hover {
+			background-color: burlywood;
+			transform: scale(1.05);
+		}
 	}
 
 	.spaced {
