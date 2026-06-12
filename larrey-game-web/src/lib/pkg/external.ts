@@ -1,3 +1,3 @@
-export function handle_js_event(args: string) {
-  console.log("from Rust:", args);
+export function submit_score(score: number) {
+	console.log('should submit score', score, typeof score);
 }

@@ -1,5 +1,5 @@
 /* @ts-self-types="./larrey.d.ts" */
-import { handle_js_event } from '$lib/pkg/external';
+import { submit_score } from '$lib/pkg/external';
 
 function __wbg_get_imports() {
     const import0 = {
@@ -843,17 +843,6 @@ function __wbg_get_imports() {
             const ret = arg0[arg1 >>> 0];
             return ret;
         },
-        __wbg_handle_js_event_624ffdda2f847b71: function(arg0, arg1) {
-            let deferred0_0;
-            let deferred0_1;
-            try {
-                deferred0_0 = arg0;
-                deferred0_1 = arg1;
-                handle_js_event(getStringFromWasm0(arg0, arg1));
-            } finally {
-                wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
-            }
-        },
         __wbg_has_73740b27f436fed3: function() { return handleError(function (arg0, arg1) {
             const ret = Reflect.has(arg0, arg1);
             return ret;
@@ -1485,6 +1474,9 @@ function __wbg_get_imports() {
         __wbg_style_ad0f3eb1fd1aa2bc: function(arg0) {
             const ret = arg0.style;
             return ret;
+        },
+        __wbg_submit_score_e522e77d4c3c7187: function(arg0) {
+            submit_score(arg0 >>> 0);
         },
         __wbg_texImage2D_152e9dcd4bc3a464: function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) {
             arg0.texImage2D(arg1 >>> 0, arg2, arg3, arg4, arg5, arg6, arg7 >>> 0, arg8 >>> 0, arg9);

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     components::{GameOverMessage, Human},
+    js::submit_score,
     resources::{Score, SoundEffect},
 };
 
@@ -51,4 +52,6 @@ pub fn end_game(
     );
 
     commands.spawn((container, children![gameover_text, score_text]));
+
+    submit_score(score.helped as usize);
 }
