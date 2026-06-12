@@ -20,8 +20,13 @@ export class LeaderboardService implements LeaderboardServiceInterface {
 		}
 	}
 
-	async updateScore(_playerId: string, _newScore: number): Promise<void> {
-		//
+	async updateScore(name: string, score: number): Promise<void> {
+		console.log('Updating score in backend...');
+		const res = await fetch('/.netlify/functions/update-score', {
+			method: 'POST',
+			body: JSON.stringify({ name, score: score })
+		});
+		console.log('... result:', res.status);
 	}
 }
 
