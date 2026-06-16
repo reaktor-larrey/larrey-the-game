@@ -15,6 +15,6 @@
 <h1>Leaderboard</h1>
 <ol>
 	{#each scores as { playerId, score } (playerId)}
-		<li>{playerId}: {score}</li>
+		<li>{playerId.toUpperCase()}: {score}</li>
 	{/each}
 </ol>
