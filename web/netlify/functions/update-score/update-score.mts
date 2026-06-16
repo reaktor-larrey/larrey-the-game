@@ -22,7 +22,12 @@ export default async (req: Request) => {
 				result
 			}),
 
-			{ status: 201 }
+			{
+				status: 201,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
 		);
 	} catch (e) {
 		return new Response(e instanceof Error ? e.message : String(e), {

@@ -1,7 +1,4 @@
-export interface Score {
-	playerId: string;
-	score: number;
-}
+import type { Score } from '$lib/types';
 
 interface LeaderboardServiceInterface {
 	getScores(): Promise<Score[]>;

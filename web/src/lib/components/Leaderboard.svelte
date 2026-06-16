@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { leaderboardServiceInstance, type Score } from '../services/leaderboard.service';
+	import { leaderboardServiceInstance } from '../services/leaderboard.service';
+	import type { Score } from '$lib/types';
 
 	const leaderboardService = leaderboardServiceInstance;
 

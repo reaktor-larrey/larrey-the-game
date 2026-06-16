@@ -1,32 +1,27 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import Leaderboard from '$lib/components/Leaderboard.svelte';
-	import init from '$lib/pkg/larrey';
-
-	let started = $state(false);
 </script>
 
 <main>
-	{#if !started}
-		<Leaderboard />
+	<Leaderboard />
 
-		<div class="spaced">
-			<button
-				class="big-button"
-				onclick={() => {
-					init();
-					started = true;
-				}}
-			>
-				<div>Start game</div>
-				<div>▶️</div>
-			</button>
-		</div>
-	{:else}
-		<div class="spaced game">
-			<canvas id="game-canvas"></canvas>
-			<div class="instructions">⬅️ and ➡️ arrows to move</div>
-		</div>
-	{/if}
+	<div class="spaced">
+		<button
+			class="big-button"
+			onclick={async () => {
+				const res = await fetch('/.netlify/functions/start-game', { method: 'POST' });
+				if (res.ok) {
+					const json = (await res.json()) as { sessionId: string };
+					goto(resolve('/start/[sessionId]', { sessionId: json.sessionId }));
+				}
+			}}
+		>
+			<div>Start game</div>
+			<div>▶️</div>
+		</button>
+	</div>
 </main>
 
 <style>
@@ -53,15 +48,5 @@
 
 	.spaced {
 		margin: 16px 0;
-	}
-
-	.game {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	.instructions {
-		margin: 32px 0;
-		color: white;
 	}
 </style>

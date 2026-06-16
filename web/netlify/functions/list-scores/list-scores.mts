@@ -1,6 +1,6 @@
 import type { Config } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
-import { type Score } from '../../../src/lib/services/leaderboard.service';
+import { type Score } from '../../../src/lib/types.ts';
 
 export default async (_req: Request) => {
 	try {
