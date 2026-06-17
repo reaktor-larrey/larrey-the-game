@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{components::*, resources::SoundEffect};
+use crate::{
+    components::*,
+    resources::{GameSession, SoundEffect},
+};
 
 pub fn spawn_camera(mut commands: Commands) {
     commands.spawn((Camera2d, Transform::from_xyz(0., 0., 0.)));
@@ -78,4 +81,15 @@ pub fn spawn_sound_effect(mut commands: Commands, asset_server: Res<AssetServer>
         robot_sound: asset_server.load("robot.mp3"),
         whee_sound: asset_server.load("whee.mp3"),
     });
+}
+
+pub fn check_for_session(session: Res<GameSession>) {
+    match &session.id {
+        Some(id) => {
+            println!("WASM mode? Game started with session ID {}", id);
+        }
+        None => {
+            println!("No session ID (running in native mode?)");
+        }
+    }
 }

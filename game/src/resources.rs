@@ -11,6 +11,11 @@ use bevy::{
     time::{Timer, TimerMode},
 };
 
+#[derive(Resource)]
+pub struct GameSession {
+    pub id: Option<String>,
+}
+
 #[derive(Debug, Clone, Default, Copy, Eq, PartialEq, Hash, States)]
 pub enum AppState {
     #[default]

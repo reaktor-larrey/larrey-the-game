@@ -2,6 +2,7 @@
 	import init from '$lib/pkg/larrey';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
+	import { start_game_with_session } from '$lib/pkg/larrey';
 
 	const { params }: PageProps = $props();
 
@@ -9,6 +10,7 @@
 
 	onMount(async () => {
 		await init();
+		start_game_with_session(sessionId);
 	});
 </script>
 

@@ -1,5 +1,7 @@
-use bevy::{asset::AssetMetaCheck, prelude::*, window::SystemCursorIcon::Default};
+use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
+#[cfg(target_family = "wasm")]
+use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{components::*, observers::*, resources::*, systems::*};
 
@@ -11,6 +13,19 @@ mod settings;
 mod systems;
 
 fn main() {
+    #[cfg(not(target_family = "wasm"))]
+    run_game(None);
+}
+
+#[cfg(target_family = "wasm")]
+#[wasm_bindgen]
+pub fn start_game_with_session(session_id: String) {
+    use web_sys::console;
+    console::log_1(&format!("Started game with session ID {}", session_id).into());
+    run_game(Some(session_id));
+}
+
+fn run_game(session_id: Option<String>) {
     let seed: u64 = 123;
     let mut app = App::new();
 
@@ -37,6 +52,7 @@ fn main() {
                 ..default()
             }),
     )
+    .insert_resource(GameSession { id: session_id })
     .insert_resource(ClearColor(Color::srgb_u8(35, 50, 52)))
     .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
     .init_state::<AppState>()
@@ -49,6 +65,7 @@ fn main() {
     .add_systems(
         Startup,
         (
+            check_for_session,
             spawn_sound_effect,
             spawn_patient,
             spawn_player_paddle,
