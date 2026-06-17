@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{asset::AssetMetaCheck, prelude::*, window::SystemCursorIcon::Default};
 use bevy_rand::{plugin::EntropyPlugin, prelude::WyRand};
 
 use crate::{components::*, observers::*, resources::*, systems::*};
@@ -21,13 +21,22 @@ fn main() {
     //     app.add_plugins(LogDiagnosticsPlugin::default());
     // }
 
-    app.add_plugins(DefaultPlugins.set(WindowPlugin {
-        primary_window: Some(Window {
-            canvas: Some("#game-canvas".into()),
-            ..default()
-        }),
-        ..default()
-    }))
+    app.add_plugins(
+        DefaultPlugins
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    canvas: Some("#game-canvas".into()),
+                    ..default()
+                }),
+                ..default()
+            })
+            .set(AssetPlugin {
+                meta_check: AssetMetaCheck::Never,
+                #[cfg(target_family = "wasm")]
+                file_path: "/assets/".into(),
+                ..default()
+            }),
+    )
     .insert_resource(ClearColor(Color::srgb_u8(35, 50, 52)))
     .add_plugins(EntropyPlugin::<WyRand>::with_seed(seed.to_ne_bytes()))
     .init_state::<AppState>()
